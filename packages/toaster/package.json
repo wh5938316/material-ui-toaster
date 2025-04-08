@@ -1,0 +1,30 @@
+{
+  "name": "material-ui-toaster",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup"
+  },
+  "peerDependencies": {
+    "@mui/icons-material": "^5.0.0 || ^6.0.0 || ^7.0.0",
+    "@mui/material": "^5.0.0 || ^6.0.0 || ^7.0.0",
+    "@types/react": "^16.8.0 || ^17 || ^18 || ^19",
+    "react": "^16.8.0 || ^17 || ^18 || ^19"
+  },
+  "devDependencies": {
+    "@mui/icons-material": "^7.0.1",
+    "@mui/material": "^7.0.1",
+    "@mui/utils": "^7.0.1",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2"
+  }
+}

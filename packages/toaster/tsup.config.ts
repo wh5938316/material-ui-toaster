@@ -7,7 +7,7 @@ export default defineConfig((options: Options) => ({
     index: './src/index.ts',
   },
   target: 'es6',
-  format: ['esm'],
+  format: ['cjs', 'esm'],
   dts: true,
   minify: true,
   clean: false,

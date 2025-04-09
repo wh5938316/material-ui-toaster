@@ -257,7 +257,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
 
   // Handle notification auto-close
   React.useEffect(() => {
-    const timeouts: number[] = [];
+    const timeouts: NodeJS.Timeout[] = [];
 
     toasts.forEach((toast) => {
       // Skip the following cases:

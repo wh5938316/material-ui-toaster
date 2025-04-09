@@ -389,7 +389,6 @@ const Toast = React.forwardRef<HTMLLIElement, ToastProps>(function Toast(inProps
     if (toastNode && ownerState.id) {
       const height = toastNode.getBoundingClientRect().height;
       if (typeof ownerState.onHeightChange === 'function') {
-        console.log('height', height);
         ownerState.onHeightChange(ownerState.id, height);
       }
     }

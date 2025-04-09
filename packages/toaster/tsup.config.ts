@@ -10,6 +10,6 @@ export default defineConfig((options: Options) => ({
   minify: true,
   clean: false,
   external: ['react', 'react-dom', '@mui/material', '@mui/icons-material'],
-  watch: ['src/**/*.{ts,tsx}'],
+  // watch: ['src/**/*.{ts,tsx}'],
   ...options,
 }));

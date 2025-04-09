@@ -17,7 +17,7 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function ToasterDemo() {
   const [position, setPosition] = React.useState<ToasterPosition>('bottom-right');
-  const [expand, setExpand] = React.useState<boolean>(true);
+  const [expand, setExpand] = React.useState<boolean>(false);
 
   // 显示一条通知
   const showToast = (type?: 'info' | 'success' | 'warning' | 'error' | 'default') => {

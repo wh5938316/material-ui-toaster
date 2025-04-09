@@ -137,7 +137,7 @@ const ToasterContainer = styled('div', {
   width: 360,
   transition: theme.transitions.create('height', {
     easing: theme.transitions.easing.easeInOut,
-    duration: theme.transitions.duration.standard,
+    duration: 400,
   }),
 
   [theme.breakpoints.down('sm')]: {
@@ -449,7 +449,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
           }),
           // Deleted element style
           ...(toast.delete && {
-            animation: `${isTop ? swipeOutUp : swipeOutDown} 0.25s forwards`,
+            animation: `${isTop ? swipeOutUp : swipeOutDown} 0.35s forwards`,
           }),
           // When a toast is deleted, hidden toast starts sliding in immediately
           ...(toasts.some((t) => t.delete) &&
@@ -471,7 +471,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
           }),
           // Deleted element style
           ...(toast.delete && {
-            animation: `${isTop ? swipeOutUp : swipeOutDown} 0.25s forwards`,
+            animation: `${isTop ? swipeOutUp : swipeOutDown} 0.35s forwards`,
           }),
           // When a toast is deleted, hidden toast starts sliding in immediately
           ...(toasts.some((t) => t.delete) &&

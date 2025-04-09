@@ -6,6 +6,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';
 import WarningIcon from '@mui/icons-material/Warning';
 import { Button, IconButton, Typography } from '@mui/material';
+import { blue, green, red, yellow } from '@mui/material/colors';
 import { styled, useThemeProps } from '@mui/material/styles';
 import { unstable_composeClasses as composeClasses } from '@mui/utils';
 import * as React from 'react';
@@ -203,7 +204,6 @@ const ToastRoot = styled('li', {
     height: 'calc(var(--gap) + 1px)',
     bottom: '100%',
     width: '100%',
-    // pointerEvents: 'none',
   },
 
   height: ownerState.isExpanded ? 'auto' : (ownerState.stackHeight ?? 'auto'),
@@ -211,33 +211,40 @@ const ToastRoot = styled('li', {
   // Deleting state
   ...(ownerState.isDeleting && {
     pointerEvents: 'none',
-    animation: `${animation} 0.25s forwards`,
+    animation: `${animation} 0.35s forwards`,
     willChange: 'transform, opacity',
   }),
 
+  backgroundColor: theme.palette.background.paper,
+
   // Default type style
   [`&.${toastClasses.typeDefault} .${toastClasses.content}`]: {
+    color: theme.palette.text.primary,
     backgroundColor: theme.palette.background.paper,
   },
 
   // Success type style
   [`&.${toastClasses.typeSuccess} .${toastClasses.content}`]: {
-    backgroundColor: theme.palette.success.light,
+    backgroundColor: green[50],
+    color: theme.palette.success.main,
   },
 
   // Error type style
   [`&.${toastClasses.typeError} .${toastClasses.content}`]: {
-    backgroundColor: theme.palette.error.light,
+    backgroundColor: red[50],
+    color: theme.palette.error.main,
   },
 
   // Info type style
   [`&.${toastClasses.typeInfo} .${toastClasses.content}`]: {
-    backgroundColor: theme.palette.info.light,
+    backgroundColor: blue[50],
+    color: theme.palette.info.main,
   },
 
   // Warning type style
   [`&.${toastClasses.typeWarning} .${toastClasses.content}`]: {
-    backgroundColor: theme.palette.warning.light,
+    backgroundColor: yellow[50],
+    color: theme.palette.warning.main,
   },
 }));
 
@@ -251,12 +258,12 @@ const ToastContent = styled('div', {
   flexDirection: 'column',
   gap: theme.spacing(0.5),
   position: 'relative',
-  boxShadow: theme.shadows[3],
+  boxShadow: theme.shadows[2],
   borderRadius: theme.shape.borderRadius,
 
   // 悬停效果
   '&:hover': {
-    boxShadow: theme.shadows[6],
+    boxShadow: theme.shadows[4],
   },
 }));
 

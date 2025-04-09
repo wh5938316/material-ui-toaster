@@ -1,0 +1,9 @@
+dist
+node_modules
+coverage  
+.next
+build
+*.d.ts
+
+.eslintrc.js
+.prettierrc

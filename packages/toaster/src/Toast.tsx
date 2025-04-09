@@ -207,8 +207,8 @@ const ToastRoot = styled('li', {
   position: 'absolute',
   overflow: 'visible',
   listStyle: 'none',
-  transition: theme.transitions.create(['transform', 'opacity'], {
-    duration: 200,
+  transition: theme.transitions.create(['transform', 'opacity', 'height'], {
+    duration: 400,
     easing: theme.transitions.easing.easeOut,
   }),
   cursor: 'default',
@@ -221,7 +221,7 @@ const ToastRoot = styled('li', {
     height: 'calc(var(--gap) + 1px)',
     bottom: '100%',
     width: '100%',
-    pointerEvents: 'none',
+    // pointerEvents: 'none',
   },
 
   height: ownerState.isExpanded ? 'auto' : (ownerState.stackHeight ?? 'auto'),
@@ -373,13 +373,23 @@ const Toast = React.forwardRef<HTMLLIElement, ToastProps>(function Toast(inProps
   // 通知元素被挂载后，测量并报告高度
   React.useEffect(() => {
     const toastNode = toastRef.current;
-    if (toastNode && ownerState.id && ownerState.isNew === true) {
+    if (toastNode && ownerState.id) {
       const height = toastNode.getBoundingClientRect().height;
       if (typeof ownerState.onHeightChange === 'function') {
+        console.log('height', height);
         ownerState.onHeightChange(ownerState.id, height);
       }
     }
-  }, [ownerState]);
+  }, [
+    ownerState.id,
+    ownerState.onHeightChange,
+    message,
+    type,
+    description,
+    actionLabel,
+    isActionLoading,
+    customContent,
+  ]);
 
   // 处理动画结束事件
   const handleAnimationEnd = React.useCallback(
@@ -414,7 +424,7 @@ const Toast = React.forwardRef<HTMLLIElement, ToastProps>(function Toast(inProps
             <CloseButton
               size="small"
               aria-label="关闭通知"
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              onClick={(e) => {
                 e.stopPropagation();
                 onClose();
               }}
@@ -478,7 +488,7 @@ const Toast = React.forwardRef<HTMLLIElement, ToastProps>(function Toast(inProps
           <CloseButton
             size="small"
             aria-label="关闭通知"
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+            onClick={(e) => {
               e.stopPropagation();
               onClose();
             }}

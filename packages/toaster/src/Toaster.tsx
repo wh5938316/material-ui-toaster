@@ -432,7 +432,6 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
         bottom: isBottom ? 0 : 'auto',
         top: !isBottom ? 0 : 'auto',
         opacity: index < maxVisible ? 1 : 0,
-        transition: 'opacity 200ms, transform 200ms',
         pointerEvents: index < maxVisible ? 'auto' : 'none', // 超出可见数量的toast无法点击
       } as React.CSSProperties;
 
@@ -458,7 +457,6 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
             index >= maxVisible - 1 && {
               opacity: 1,
               transform: `translateY(${isBottom ? '-' : ''}${yOffset}px)`,
-              transition: 'opacity 200ms, transform 200ms',
             }),
         };
       } else {
@@ -481,7 +479,6 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
             index >= maxVisible - 1 && {
               opacity: 1,
               transform: `translateY(${isBottom ? '-' : ''}${effectiveIndex * 16}px) scale(${1 - effectiveIndex * 0.05})`,
-              transition: 'opacity 200ms, transform 200ms',
             }),
         };
       }

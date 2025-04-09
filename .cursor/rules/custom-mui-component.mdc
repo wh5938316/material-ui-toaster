@@ -1,0 +1,127 @@
+---
+description: 
+globs: packages/toaster/**/*.tsx
+alwaysApply: false
+---
+# MUI 自定义主题组件规则
+
+## 创建自定义 MUI 主题组件的步骤
+
+### 1. 创建组件插槽
+使用 `styled` API 创建组件的各个部分（插槽），命名规范如下：
+- 使用 `root` 作为最外层容器元素
+- 为每个插槽设置 `name` 和 `slot` 参数
+- 名称格式推荐为 `Mui组件名`
+
+```tsx
+const ComponentRoot = styled('div', {
+  name: 'MuiComponent', // 组件名称
+  slot: 'root', // 插槽名称
+})(({ theme }) => ({
+  // 样式定义
+}));
+
+const ComponentPart = styled('div', {
+  name: 'MuiComponent',
+  slot: 'part',
+})(({ theme }) => ({
+  // 样式定义
+}));
+```
+
+### 2. 组装组件
+将创建的插槽组合成完整组件：
+
+```tsx
+const Component = React.forwardRef(function Component(props, ref) {
+  const { part1, part2, ...other } = props;
+  
+  return (
+    <ComponentRoot ref={ref} {...other}>
+      <ComponentPart1>{part1}</ComponentPart1>
+      <ComponentPart2>{part2}</ComponentPart2>
+    </ComponentRoot>
+  );
+});
+```
+
+### 3. 使用 ownerState 实现基于属性的样式
+通过 `ownerState` 对象传递属性到各个插槽：
+
+```tsx
+const Component = React.forwardRef(function Component(props, ref) {
+  const { part1, part2, variant, ...other } = props;
+  
+  const ownerState = { ...props, variant };
+  
+  return (
+    <ComponentRoot ref={ref} ownerState={ownerState} {...other}>
+      <ComponentPart1 ownerState={ownerState}>{part1}</ComponentPart1>
+      <ComponentPart2 ownerState={ownerState}>{part2}</ComponentPart2>
+    </ComponentRoot>
+  );
+});
+```
+
+然后在插槽样式中使用 `ownerState`：
+
+```tsx
+const ComponentRoot = styled('div', {
+  name: 'MuiComponent',
+  slot: 'root',
+})(({ theme, ownerState }) => ({
+  // 基础样式
+  ...(ownerState.variant === 'outlined' && {
+    // 变体样式
+  }),
+}));
+```
+
+### 4. 支持主题默认属性
+使用 `useThemeProps` API 添加主题默认属性支持：
+
+```tsx
+import { useThemeProps } from '@mui/material/styles';
+
+const Component = React.forwardRef(function Component(inProps, ref) {
+  const props = useThemeProps({ props: inProps, name: 'MuiComponent' });
+  // 组件逻辑
+});
+```
+
+### 5. TypeScript 支持
+创建组件的接口：
+
+```tsx
+interface ComponentProps {
+  value: number | string;
+  variant?: 'outlined';
+  // 其他属性
+}
+
+interface ComponentOwnerState extends ComponentProps {
+  // 内部状态属性
+}
+```
+
+### 6. 添加到主题类型
+
+```tsx
+declare module '@mui/material/styles' {
+  interface ComponentNameToClassKey {
+    MuiComponent: 'root' | 'part1' | 'part2';
+  }
+
+  interface ComponentsPropsList {
+    MuiComponent: Partial<ComponentProps>;
+  }
+
+  interface Components {
+    MuiComponent?: {
+      defaultProps?: ComponentsPropsList['MuiComponent'];
+      styleOverrides?: ComponentsOverrides<Theme>['MuiComponent'];
+      variants?: ComponentsVariants['MuiComponent'];
+    };
+  }
+}
+```

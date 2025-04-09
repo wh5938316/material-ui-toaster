@@ -1,16 +1,14 @@
+import { ToasterPosition } from './Toaster';
+import { getToastUtilityClass, toastClasses } from './toastClasses';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';
 import WarningIcon from '@mui/icons-material/Warning';
-import { Button, CircularProgress, IconButton, Typography } from '@mui/material';
+import { Button, IconButton, Typography } from '@mui/material';
 import { styled, useThemeProps } from '@mui/material/styles';
 import { unstable_composeClasses as composeClasses } from '@mui/utils';
 import * as React from 'react';
-
-import { ToasterPosition } from './Toaster';
-import { ToastData } from './ToasterEvents';
-import { getToastUtilityClass } from './toastClasses';
 
 // Toast属性接口
 export interface ToastProps {
@@ -165,22 +163,6 @@ const useUtilityClasses = (ownerState: ToastOwnerState) => {
   return composeClasses(slots, getToastUtilityClass, {});
 };
 
-// 获取通知类型对应的背景色
-const getBackgroundColor = (type: string | undefined, theme: any) => {
-  switch (type) {
-    case 'success':
-      return theme.palette.success.light;
-    case 'error':
-      return theme.palette.error.light;
-    case 'info':
-      return theme.palette.info.light;
-    case 'warning':
-      return theme.palette.warning.light;
-    default:
-      return theme.palette.background.paper;
-  }
-};
-
 // 获取通知类型对应的默认图标
 export const getDefaultIcon = (type?: string) => {
   switch (type) {
@@ -232,6 +214,31 @@ const ToastRoot = styled('li', {
     animation: `${animation} 0.25s forwards`,
     willChange: 'transform, opacity',
   }),
+
+  // 默认类型样式
+  [`&.${toastClasses.typeDefault} .${toastClasses.content}`]: {
+    backgroundColor: theme.palette.background.paper,
+  },
+
+  // 成功类型样式
+  [`&.${toastClasses.typeSuccess} .${toastClasses.content}`]: {
+    backgroundColor: theme.palette.success.light,
+  },
+
+  // 错误类型样式
+  [`&.${toastClasses.typeError} .${toastClasses.content}`]: {
+    backgroundColor: theme.palette.error.light,
+  },
+
+  // 信息类型样式
+  [`&.${toastClasses.typeInfo} .${toastClasses.content}`]: {
+    backgroundColor: theme.palette.info.light,
+  },
+
+  // 警告类型样式
+  [`&.${toastClasses.typeWarning} .${toastClasses.content}`]: {
+    backgroundColor: theme.palette.warning.light,
+  },
 }));
 
 // 通知内容样式
@@ -240,7 +247,6 @@ const ToastContent = styled('div', {
   slot: 'Content',
 })<{ ownerState: ToastOwnerState }>(({ theme, ownerState }) => ({
   padding: theme.spacing(2),
-  backgroundColor: getBackgroundColor(ownerState.type, theme),
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(0.5),

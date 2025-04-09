@@ -1,10 +1,9 @@
 import { Options, defineConfig } from 'tsup';
 
 export default defineConfig((options: Options) => ({
-  // treeshake: true,
-  // splitting: true,
   entry: {
     index: './src/index.ts',
+    // declarations: './src/themeDeclarations.d.ts',
   },
   target: 'es6',
   format: ['cjs', 'esm'],

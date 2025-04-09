@@ -1,13 +1,12 @@
+import Toast from './Toast';
+import { ToastData, ToasterEvents } from './ToasterEvents';
+import { swipeInDown, swipeInUp, swipeOutDown, swipeOutUp } from './toaster-animations';
+import { getToasterUtilityClass } from './toasterClasses';
 import { Portal } from '@mui/material';
 import { styled, useThemeProps } from '@mui/material/styles';
 import { unstable_composeClasses as composeClasses } from '@mui/utils';
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-
-import Toast from './Toast';
-import { ToastData, ToastToDismiss, ToasterEvents } from './ToasterEvents';
-import { swipeInDown, swipeInUp, swipeOutDown, swipeOutUp } from './toaster-animations';
-import { getToasterUtilityClass } from './toasterClasses';
 
 // 定义 Toaster 位置类型
 export type ToasterPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
@@ -152,7 +151,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     className,
     position = 'bottom-right',
     gap = 16,
-    expand = true,
+    expand = false,
     maxVisible = 3,
     duration = 5000,
     children,

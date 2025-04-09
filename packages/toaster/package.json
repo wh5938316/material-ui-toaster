@@ -4,11 +4,22 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./types/index.d.ts"
+    }
   },
   "peerDependencies": {
     "@mui/icons-material": "^5.0.0 || ^6.0.0 || ^7.0.0",

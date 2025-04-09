@@ -3,10 +3,8 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Toaster, { ToasterPosition, toaster } from 'material-ui-toaster';
@@ -66,7 +64,7 @@ export default function ToasterDemo() {
         // 不需要返回任何内容，action方法会自动处理成功状态
       },
       {
-        type: 'warning',
+        type: 'default',
         description: '此操作无法撤销。',
         success: '文件已成功删除！',
         error: '删除失败，请重试',
@@ -100,25 +98,23 @@ export default function ToasterDemo() {
   // 显示自定义内容的通知
   const showCustomToast = () => {
     const CustomContent = (
-      <Card elevation={0} sx={{ width: '100%' }}>
-        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-          <Typography variant="subtitle1" gutterBottom fontWeight="bold">
-            新消息通知
-          </Typography>
-          <Divider sx={{ my: 1 }} />
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            您有3条未读消息和2个新的任务需要处理。
-          </Typography>
-          <Stack direction="row" spacing={1} justifyContent="flex-end">
-            <Button size="small" variant="text">
-              忽略
-            </Button>
-            <Button size="small" variant="contained">
-              查看详情
-            </Button>
-          </Stack>
-        </CardContent>
-      </Card>
+      <Box sx={{ bgcolor: 'background.paper' }}>
+        <Typography variant="subtitle1" gutterBottom fontWeight="bold">
+          新消息通知
+        </Typography>
+        {/* <Divider sx={{ my: 1 }} /> */}
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          您有3条未读消息和2个新的任务需要处理。
+        </Typography>
+        <Stack direction="row" spacing={1} justifyContent="flex-end">
+          <Button size="small" variant="text">
+            忽略
+          </Button>
+          <Button size="small" variant="contained">
+            查看详情
+          </Button>
+        </Stack>
+      </Box>
     );
 
     toaster.custom(CustomContent, { duration: 8000 });
@@ -126,7 +122,7 @@ export default function ToasterDemo() {
 
   return (
     <div style={{ padding: 24 }}>
-      <Toaster position={position} expand={expand} duration={8000000} />
+      <Toaster position={position} expand={expand} duration={5000} />
       <Typography variant="h4" gutterBottom>
         Toaster 组件演示
       </Typography>
@@ -186,12 +182,18 @@ export default function ToasterDemo() {
         通知位置
       </Typography>
 
-      <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
+      <Stack direction="row" spacing={2} sx={{ mb: 4, flexWrap: 'wrap', gap: 1 }}>
         <Button
           variant={position === 'top-left' ? 'contained' : 'outlined'}
           onClick={() => setPosition('top-left')}
         >
           左上角
+        </Button>
+        <Button
+          variant={position === 'top-center' ? 'contained' : 'outlined'}
+          onClick={() => setPosition('top-center')}
+        >
+          顶部居中
         </Button>
         <Button
           variant={position === 'top-right' ? 'contained' : 'outlined'}
@@ -204,6 +206,12 @@ export default function ToasterDemo() {
           onClick={() => setPosition('bottom-left')}
         >
           左下角
+        </Button>
+        <Button
+          variant={position === 'bottom-center' ? 'contained' : 'outlined'}
+          onClick={() => setPosition('bottom-center')}
+        >
+          底部居中
         </Button>
         <Button
           variant={position === 'bottom-right' ? 'contained' : 'outlined'}

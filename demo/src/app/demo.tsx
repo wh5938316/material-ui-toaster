@@ -1,4 +1,5 @@
 'use client';
+
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
@@ -8,9 +9,8 @@ import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import * as React from 'react';
-
 import Toaster, { ToasterPosition, toaster } from 'material-ui-toaster';
+import * as React from 'react';
 
 // 模拟异步操作
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

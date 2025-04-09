@@ -1,7 +1,5 @@
-import ToasterDemo from "./demo";
+import ToasterDemo from './demo';
 
 export default function Home() {
-  return (
-    <ToasterDemo />
-  );
+  return <ToasterDemo />;
 }

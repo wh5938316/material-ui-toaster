@@ -9,7 +9,13 @@ import * as React from 'react';
 import ReactDOM from 'react-dom';
 
 // Define Toaster position type
-export type ToasterPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+export type ToasterPosition =
+  | 'top-left'
+  | 'top-right'
+  | 'top-center'
+  | 'bottom-left'
+  | 'bottom-right'
+  | 'bottom-center';
 
 // Component props type
 export interface ToasterProps {
@@ -119,11 +125,25 @@ const ToasterRoot = styled('div', {
     overflow: 'visible',
 
     ...(vertical === 'top' ? { top: 24 } : { bottom: 24 }),
-    ...(horizontal === 'left' ? { left: 24 } : { right: 24 }),
+    ...(horizontal === 'left'
+      ? { left: 24 }
+      : horizontal === 'center'
+        ? {
+            left: '50%',
+            transform: 'translateX(-50%)',
+          }
+        : { right: 24 }),
 
     [theme.breakpoints.down('sm')]: {
       ...(vertical === 'top' ? { top: 16 } : { bottom: 16 }),
-      ...(horizontal === 'left' ? { left: 16 } : { right: 16 }),
+      ...(horizontal === 'left'
+        ? { left: 16 }
+        : horizontal === 'center'
+          ? {
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }
+          : { right: 16 }),
     },
   };
 });

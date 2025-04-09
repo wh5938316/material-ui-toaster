@@ -12,10 +12,14 @@ export interface ToasterClasses {
   positionTopLeft: string;
   /** Applied to the root element with position top-right */
   positionTopRight: string;
+  /** Applied to the root element with position top-center */
+  positionTopCenter: string;
   /** Applied to the root element with position bottom-left */
   positionBottomLeft: string;
   /** Applied to the root element with position bottom-right */
   positionBottomRight: string;
+  /** Applied to the root element with position bottom-center */
+  positionBottomCenter: string;
   /** Applied to the root element in expanded state */
   expanded: string;
 }
@@ -33,7 +37,9 @@ export const toasterClasses: ToasterClasses = generateUtilityClasses('MuiToaster
   'container',
   'positionTopLeft',
   'positionTopRight',
+  'positionTopCenter',
   'positionBottomLeft',
   'positionBottomRight',
+  'positionBottomCenter',
   'expanded',
 ]);

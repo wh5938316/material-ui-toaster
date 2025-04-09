@@ -1,4 +1,4 @@
-// 定义Toast数据类型
+// Define Toast data type
 export interface ToastData {
   id: number;
   message: React.ReactNode;
@@ -9,37 +9,36 @@ export interface ToastData {
   position?: number;
   delete?: boolean;
   height?: number;
-  // 新增属性
   icon?: React.ReactNode;
   actionLabel?: string;
   actionClick?: () => void | Promise<any>;
   actionLoading?: boolean;
   customContent?: React.ReactNode;
-  // Promise相关属性
+  // Promise-related properties
   promisePending?: boolean;
   promiseState?: 'pending' | 'fulfilled' | 'rejected';
 }
 
-// 定义要删除的Toast类型
+// Define type for Toast to dismiss
 export type ToastToDismiss = { id: number; dismiss: boolean };
 
-// 定义事件类型
+// Define event types
 export type ToasterEvents = {
   toast: ToastData | ToastToDismiss;
   clear: void;
 };
 
-// 创建全局事件处理器
+// Create global event handler
 type Listener = (data: ToastData | ToastToDismiss) => void;
 type ClearListener = () => void;
 
-// 简化的事件系统
+// Simplified event system
 class ToasterEventSystem {
   private listeners: Listener[] = [];
   private clearListeners: ClearListener[] = [];
   private toastId = 0;
 
-  // 添加Toast
+  // Add Toast
   toast(toast: Omit<ToastData, 'id'>): number {
     const id = ++this.toastId;
     const newToast = { id, ...toast, position: Date.now() } as ToastData;
@@ -48,7 +47,7 @@ class ToasterEventSystem {
     return id;
   }
 
-  // 添加各类型Toast的快捷方法
+  // Shortcut methods for different types of Toast
   success(message: React.ReactNode, options?: Omit<ToastData, 'id' | 'message' | 'type'>) {
     return this.toast({ message, type: 'success', ...options });
   }
@@ -66,11 +65,11 @@ class ToasterEventSystem {
   }
 
   /**
-   * 创建带操作按钮的Toast
-   * @param message 通知消息
-   * @param actionLabel 按钮文本
-   * @param actionClick 按钮点击处理函数
-   * @param options 其他选项，包括成功和失败时的消息
+   * Create Toast with action button
+   * @param message Notification message
+   * @param actionLabel Button text
+   * @param actionClick Button click handler
+   * @param options Other options, including success and failure messages
    * @returns Toast ID
    */
   action(
@@ -93,26 +92,26 @@ class ToasterEventSystem {
         try {
           const result = await actionClick();
 
-          // 操作成功，更新为成功状态
+          // Operation successful, update to success state
           this.notifyListeners({
             id,
-            message: options?.success || '操作成功',
+            message: options?.success || 'Operation successful',
             type: 'success',
-            actionLabel: undefined, // 移除按钮
-            actionClick: undefined, // 移除点击处理函数
+            actionLabel: undefined, // Remove button
+            actionClick: undefined, // Remove click handler
             actionLoading: false,
           } as ToastData);
 
           return result;
         } catch (error) {
-          // 操作失败，更新为错误状态
+          // Operation failed, update to error state
           this.notifyListeners({
             id,
-            message: options?.error || '操作失败',
+            message: options?.error || 'Operation failed',
             description: error instanceof Error ? error.message : undefined,
             type: 'error',
-            actionLabel: undefined, // 移除按钮
-            actionClick: undefined, // 移除点击处理函数
+            actionLabel: undefined, // Remove button
+            actionClick: undefined, // Remove click handler
             actionLoading: false,
           } as ToastData);
 
@@ -129,10 +128,10 @@ class ToasterEventSystem {
   }
 
   /**
-   * 创建基于Promise的Toast
-   * @param message 初始消息
-   * @param promise Promise对象
-   * @param options 配置选项，包括成功和失败时的消息
+   * Create Promise-based Toast
+   * @param message Initial message
+   * @param promise Promise object
+   * @param options Configuration options, including success and failure messages
    * @returns Toast ID
    */
   promise<T>(
@@ -147,10 +146,10 @@ class ToasterEventSystem {
   ): number {
     const loadingMessage = options?.loading || message;
 
-    // 修改Promise检查的逻辑
+    // Modify Promise checking logic
     if (typeof promise !== 'object' || typeof promise.then !== 'function') {
-      console.error('ToasterEvents.promise: 参数必须是Promise实例');
-      return this.error('操作失败：参数类型错误');
+      console.error('ToasterEvents.promise: Parameter must be a Promise instance');
+      return this.error('Operation failed: Parameter type error');
     }
 
     const id = this.toast({
@@ -161,10 +160,10 @@ class ToasterEventSystem {
       ...(options?.type || {}),
     });
 
-    // 不允许自动关闭，直到Promise完成
+    // Do not allow auto-close until Promise completes
     let isClosed = false;
 
-    // 处理Promise完成
+    // Handle Promise completion
     promise
       .then((data) => {
         if (isClosed) return;
@@ -173,7 +172,7 @@ class ToasterEventSystem {
         if (typeof options?.success === 'function') {
           successMessage = (options.success as Function)(data);
         } else {
-          successMessage = options?.success || '操作成功';
+          successMessage = options?.success || 'Operation successful';
         }
 
         this.notifyListeners({
@@ -191,7 +190,7 @@ class ToasterEventSystem {
         if (typeof options?.error === 'function') {
           errorMessage = (options.error as Function)(error);
         } else {
-          errorMessage = options?.error || '操作失败';
+          errorMessage = options?.error || 'Operation failed';
         }
 
         this.notifyListeners({
@@ -203,15 +202,15 @@ class ToasterEventSystem {
         } as ToastData);
       });
 
-    // 移除这个错误的部分，不再尝试给id添加close方法
-    // 直接返回id即可
+    // Remove this erroneous part, no longer try to add a close method to id
+    // Just return the id
     return id;
   }
 
   /**
-   * 创建自定义内容的Toast
-   * @param content 自定义React节点
-   * @param options 其他选项
+   * Create Toast with custom content
+   * @param content Custom React node
+   * @param options Other options
    * @returns Toast ID
    */
   custom(
@@ -219,23 +218,23 @@ class ToasterEventSystem {
     options?: Omit<ToastData, 'id' | 'message' | 'customContent'>,
   ): number {
     return this.toast({
-      message: '', // 自定义内容时，message可以为空
+      message: '', // Message can be empty with custom content
       customContent: content,
       ...options,
     });
   }
 
-  // 删除指定ID的Toast
+  // Delete Toast with specified ID
   dismiss(id: number) {
     this.notifyListeners({ id, dismiss: true });
   }
 
-  // 清除所有Toast
+  // Clear all Toasts
   clear() {
     this.notifyClearListeners();
   }
 
-  // 通知所有监听器
+  // Notify all listeners
   private notifyListeners(data: ToastData | ToastToDismiss) {
     this.listeners.forEach((listener) => {
       try {
@@ -246,7 +245,7 @@ class ToasterEventSystem {
     });
   }
 
-  // 通知所有清除监听器
+  // Notify all clear listeners
   private notifyClearListeners() {
     this.clearListeners.forEach((listener) => {
       try {
@@ -257,29 +256,29 @@ class ToasterEventSystem {
     });
   }
 
-  // 订阅事件
+  // Subscribe to events
   subscribe(callback: (data: ToastData | ToastToDismiss) => void) {
     this.listeners.push(callback);
 
-    // 返回取消订阅函数
+    // Return unsubscribe function
     return () => {
       this.listeners = this.listeners.filter((listener) => listener !== callback);
     };
   }
 
-  // 订阅清除事件
+  // Subscribe to clear events
   onClear(callback: () => void) {
     this.clearListeners.push(callback);
 
-    // 返回取消订阅函数
+    // Return unsubscribe function
     return () => {
       this.clearListeners = this.clearListeners.filter((listener) => listener !== callback);
     };
   }
 }
 
-// 创建单例实例
+// Create singleton instance
 export const ToasterEvents = new ToasterEventSystem();
 
-// 导出默认实例
+// Export default instance
 export default ToasterEvents;

@@ -4,30 +4,30 @@ import {
 } from '@mui/utils';
 
 export interface ToasterClasses {
-  /** 应用于根元素 */
+  /** Applied to the root element */
   root: string;
-  /** 应用于容器元素 */
+  /** Applied to the container element */
   container: string;
-  /** 应用于位置为top-left的根元素 */
+  /** Applied to the root element with position top-left */
   positionTopLeft: string;
-  /** 应用于位置为top-right的根元素 */
+  /** Applied to the root element with position top-right */
   positionTopRight: string;
-  /** 应用于位置为bottom-left的根元素 */
+  /** Applied to the root element with position bottom-left */
   positionBottomLeft: string;
-  /** 应用于位置为bottom-right的根元素 */
+  /** Applied to the root element with position bottom-right */
   positionBottomRight: string;
-  /** 应用于展开状态的根元素 */
+  /** Applied to the root element in expanded state */
   expanded: string;
 }
 
 export type ToasterClassKey = keyof ToasterClasses;
 
-// 生成类名前缀为'MuiToaster'的工具类
+// Generate utility classes with prefix 'MuiToaster'
 export function getToasterUtilityClass(slot: string) {
   return generateUtilityClass('MuiToaster', slot);
 }
 
-// 根据ToasterClasses接口生成所有类名
+// Generate all class names based on ToasterClasses interface
 export const toasterClasses: ToasterClasses = generateUtilityClasses('MuiToaster', [
   'root',
   'container',

@@ -10,72 +10,72 @@ import { styled, useThemeProps } from '@mui/material/styles';
 import { unstable_composeClasses as composeClasses } from '@mui/utils';
 import * as React from 'react';
 
-// Toast属性接口
+// Toast properties interface
 export interface ToastProps {
   /**
-   * 通知内容
+   * Notification content
    */
   message: React.ReactNode;
   /**
-   * 通知描述（可选）
+   * Notification description (optional)
    */
   description?: React.ReactNode;
   /**
-   * 通知类型
+   * Notification type
    * @default 'default'
    */
   type?: 'info' | 'success' | 'warning' | 'error' | 'default';
   /**
-   * 关闭回调函数
+   * Close callback function
    */
   onClose?: () => void;
   /**
-   * CSS样式
+   * CSS styles
    */
   style?: React.CSSProperties;
   /**
-   * 自定义类名
+   * Custom class name
    */
   className?: string;
   /**
-   * 自定义动画
+   * Custom animation
    */
   animation?: string;
   /**
-   * 组件内部状态
+   * Component internal state
    */
   ownerState?: ToastOwnerState;
   /**
-   * 通知高度变化回调函数
+   * Notification height change callback function
    */
   onHeightChange?: (id: number, height: number) => void;
   /**
-   * 动画结束回调函数
+   * Animation end callback function
    */
   onAnimationEnd?: () => void;
   /**
-   * 自定义图标
+   * Custom icon
    */
   icon?: React.ReactNode;
   /**
-   * 操作按钮文本
+   * Action button text
    */
   actionLabel?: string;
   /**
-   * 操作按钮点击处理函数
+   * Action button click handler
    */
   actionClick?: () => void | Promise<any>;
   /**
-   * 操作按钮是否处于加载状态
+   * Whether the action button is in loading state
    */
   actionLoading?: boolean;
   /**
-   * 自定义内容
+   * Custom content
    */
   customContent?: React.ReactNode;
 }
 
-// Toast内部状态接口
+// Toast internal state interface
 export interface ToastOwnerState extends Omit<ToastProps, 'ownerState'> {
   position?: ToasterPosition;
   id?: number;
@@ -86,51 +86,51 @@ export interface ToastOwnerState extends Omit<ToastProps, 'ownerState'> {
   stackHeight?: number;
 }
 
-// Toast组件slots
+// Toast component slots
 export interface ToastSlots {
   /**
-   * 根元素
+   * Root element
    * @default 'li'
    */
   root?: React.ElementType;
   /**
-   * 内容容器元素
+   * Content container element
    * @default 'div'
    */
   content?: React.ElementType;
   /**
-   * 消息元素
+   * Message element
    * @default Typography
    */
   message?: React.ElementType;
   /**
-   * 描述元素
+   * Description element
    * @default Typography
    */
   description?: React.ElementType;
   /**
-   * 关闭按钮元素
+   * Close button element
    * @default IconButton
    */
   closeButton?: React.ElementType;
   /**
-   * 关闭图标
+   * Close icon
    * @default CloseIcon
    */
   closeIcon?: React.ElementType;
   /**
-   * 图标容器
+   * Icon container
    * @default 'div'
    */
   iconContainer?: React.ElementType;
   /**
-   * 操作按钮
+   * Action button
    * @default Button
    */
   actionButton?: React.ElementType;
 }
 
-// Toast组件slot属性
+// Toast component slot properties
 export interface ToastSlotProps {
   root?: Record<string, any>;
   content?: Record<string, any>;
@@ -142,7 +142,7 @@ export interface ToastSlotProps {
   actionButton?: Record<string, any>;
 }
 
-// 获取组件样式类
+// Get component style classes
 const useUtilityClasses = (ownerState: ToastOwnerState) => {
   const { type, isNew, isDeleting } = ownerState;
   const slots = {
@@ -163,7 +163,7 @@ const useUtilityClasses = (ownerState: ToastOwnerState) => {
   return composeClasses(slots, getToastUtilityClass, {});
 };
 
-// 获取通知类型对应的默认图标
+// Get the default icon corresponding to the notification type
 export const getDefaultIcon = (type?: string) => {
   switch (type) {
     case 'info':
@@ -179,7 +179,7 @@ export const getDefaultIcon = (type?: string) => {
   }
 };
 
-// Toast根元素样式
+// Toast root element style
 const ToastRoot = styled('li', {
   name: 'MuiToast',
   slot: 'Root',
@@ -195,7 +195,7 @@ const ToastRoot = styled('li', {
   }),
   cursor: 'default',
 
-  // 添加间隔的伪元素
+  // Add spacing pseudo-element
   '&::after': {
     content: '""',
     position: 'absolute',
@@ -208,40 +208,40 @@ const ToastRoot = styled('li', {
 
   height: ownerState.isExpanded ? 'auto' : (ownerState.stackHeight ?? 'auto'),
 
-  // 删除状态
+  // Deleting state
   ...(ownerState.isDeleting && {
     pointerEvents: 'none',
     animation: `${animation} 0.25s forwards`,
     willChange: 'transform, opacity',
   }),
 
-  // 默认类型样式
+  // Default type style
   [`&.${toastClasses.typeDefault} .${toastClasses.content}`]: {
     backgroundColor: theme.palette.background.paper,
   },
 
-  // 成功类型样式
+  // Success type style
   [`&.${toastClasses.typeSuccess} .${toastClasses.content}`]: {
     backgroundColor: theme.palette.success.light,
   },
 
-  // 错误类型样式
+  // Error type style
   [`&.${toastClasses.typeError} .${toastClasses.content}`]: {
     backgroundColor: theme.palette.error.light,
   },
 
-  // 信息类型样式
+  // Info type style
   [`&.${toastClasses.typeInfo} .${toastClasses.content}`]: {
     backgroundColor: theme.palette.info.light,
   },
 
-  // 警告类型样式
+  // Warning type style
   [`&.${toastClasses.typeWarning} .${toastClasses.content}`]: {
     backgroundColor: theme.palette.warning.light,
   },
 }));
 
-// 通知内容样式
+// Notification content style
 const ToastContent = styled('div', {
   name: 'MuiToast',
   slot: 'Content',

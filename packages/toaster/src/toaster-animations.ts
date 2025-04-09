@@ -1,6 +1,6 @@
 import { keyframes } from '@mui/material/styles';
 
-// 向上滑出动画
+// Swipe out upward animation
 export const swipeOutUp = keyframes`
   from {
     transform: translateY(var(--swipe-amount-y));
@@ -13,7 +13,7 @@ export const swipeOutUp = keyframes`
   }
 `;
 
-// 向下滑出动画
+// Swipe out downward animation
 export const swipeOutDown = keyframes`
   from {
     transform: translateY(var(--swipe-amount-y));
@@ -26,7 +26,7 @@ export const swipeOutDown = keyframes`
   }
 `;
 
-// 向上滑入动画
+// Swipe in upward animation
 export const swipeInUp = keyframes`
   from {
     transform: translateY(calc(var(--swipe-amount-y) + 100%));
@@ -39,7 +39,7 @@ export const swipeInUp = keyframes`
   }
 `;
 
-// 向下滑入动画
+// Swipe in downward animation
 export const swipeInDown = keyframes`
   from {
     transform: translateY(calc(var(--swipe-amount-y) - 100%));

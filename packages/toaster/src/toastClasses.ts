@@ -4,58 +4,58 @@ import {
 } from '@mui/utils';
 
 export interface ToastClasses {
-  /** 应用于根元素 */
+  /** Applied to the root element */
   root: string;
-  /** 应用于内容元素 */
+  /** Applied to the content element */
   content: string;
-  /** 应用于消息元素 */
+  /** Applied to the message element */
   message: string;
-  /** 应用于描述元素 */
+  /** Applied to the description element */
   description: string;
-  /** 应用于关闭按钮 */
+  /** Applied to the close button */
   closeButton: string;
-  /** 应用于图标容器 */
+  /** Applied to the icon container */
   iconContainer: string;
-  /** 应用于操作按钮 */
+  /** Applied to the action button */
   actionButton: string;
-  /** 应用于内容区域（图标和文本） */
+  /** Applied to the content area (icon and text) */
   contentArea: string;
-  /** 应用于文本区域 */
+  /** Applied to the text area */
   textArea: string;
-  /** 应用于自定义内容 */
+  /** Applied to custom content */
   customContent: string;
-  /** 应用于信息类型Toast */
+  /** Applied to info type Toast */
   typeInfo: string;
-  /** 应用于成功类型Toast */
+  /** Applied to success type Toast */
   typeSuccess: string;
-  /** 应用于警告类型Toast */
+  /** Applied to warning type Toast */
   typeWarning: string;
-  /** 应用于错误类型Toast */
+  /** Applied to error type Toast */
   typeError: string;
-  /** 应用于默认类型Toast */
+  /** Applied to default type Toast */
   typeDefault: string;
-  /** 应用于新创建的Toast */
+  /** Applied to newly created Toast */
   new: string;
-  /** 应用于正在删除的Toast */
+  /** Applied to Toast being deleted */
   deleting: string;
-  /** 应用于Promise类型处于加载状态的Toast */
+  /** Applied to Promise type Toast in loading state */
   promisePending: string;
-  /** 应用于Promise类型成功的Toast */
+  /** Applied to successful Promise type Toast */
   promiseFulfilled: string;
-  /** 应用于Promise类型失败的Toast */
+  /** Applied to failed Promise type Toast */
   promiseRejected: string;
-  /** 应用于操作按钮加载状态 */
+  /** Applied to action button in loading state */
   actionLoading: string;
 }
 
 export type ToastClassKey = keyof ToastClasses;
 
-// 生成类名前缀为'MuiToast'的工具类
+// Generate utility classes with prefix 'MuiToast'
 export function getToastUtilityClass(slot: string) {
   return generateUtilityClass('MuiToast', slot);
 }
 
-// 根据ToastClasses接口生成所有类名
+// Generate all class names based on ToastClasses interface
 export const toastClasses: ToastClasses = generateUtilityClasses('MuiToast', [
   'root',
   'content',

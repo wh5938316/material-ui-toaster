@@ -8,75 +8,75 @@ import { unstable_composeClasses as composeClasses } from '@mui/utils';
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 
-// 定义 Toaster 位置类型
+// Define Toaster position type
 export type ToasterPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
-// 组件属性类型
+// Component props type
 export interface ToasterProps {
   /**
-   * 自定义样式类名
+   * Custom style class name
    */
   className?: string;
   /**
-   * Toaster 位置
+   * Toaster position
    * @default 'bottom-right'
    */
   position?: ToasterPosition;
   /**
-   * Toast 之间的间距
+   * Gap between Toast items
    * @default 16
    */
   gap?: number;
   /**
-   * 是否展开 Toast 列表
+   * Whether to expand the Toast list
    * @default true
    */
   expand?: boolean;
   /**
-   * 可见 Toast 的最大数量
+   * Maximum number of visible Toasts
    * @default 3
    */
   maxVisible?: number;
   /**
-   * Toast默认持续时间(毫秒)
+   * Default duration of Toast (milliseconds)
    * @default 5000
    */
   duration?: number;
   /**
-   * 子元素
+   * Children elements
    */
   children?: React.ReactNode;
   /**
-   * 自定义关闭按钮
+   * Custom close button
    */
   closeButton?: React.ReactNode;
 }
 
-// Toaster组件slots
+// Toaster component slots
 export interface ToasterSlots {
   /**
-   * 根元素
+   * Root element
    * @default 'div'
    */
   root?: React.ElementType;
   /**
-   * 容器元素
+   * Container element
    * @default 'div'
    */
   container?: React.ElementType;
   /**
-   * Toast元素
+   * Toast element
    * @default Toast
    */
   toast?: React.ElementType;
   /**
-   * 关闭按钮
-   * @default 内置关闭按钮
+   * Close button
+   * @default Built-in close button
    */
   closeButton?: React.ElementType;
 }
 
-// Toaster组件slot属性
+// Toaster component slot properties
 export interface ToasterSlotProps {
   root?: Record<string, any>;
   container?: Record<string, any>;
@@ -84,12 +84,12 @@ export interface ToasterSlotProps {
   closeButton?: Record<string, any>;
 }
 
-// 所有组件Slots的类型
+// Type for all component slots
 export interface ToasterOwnerState extends ToasterProps {
   position: ToasterPosition;
 }
 
-// 获取组件样式类
+// Get component style classes
 const useUtilityClasses = (ownerState: ToasterOwnerState) => {
   const { position, expand } = ownerState;
   const slots = {
@@ -104,7 +104,7 @@ const useUtilityClasses = (ownerState: ToasterOwnerState) => {
   return composeClasses(slots, getToasterUtilityClass, {});
 };
 
-// 根容器样式
+// Root container style
 const ToasterRoot = styled('div', {
   name: 'MuiToaster',
   slot: 'Root',
@@ -128,7 +128,7 @@ const ToasterRoot = styled('div', {
   };
 });
 
-// 容器样式
+// Container style
 const ToasterContainer = styled('div', {
   name: 'MuiToaster',
   slot: 'Container',
@@ -159,14 +159,14 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     ...other
   } = props;
 
-  // 状态管理
+  // State management
   const [toasts, setToasts] = React.useState<ToastData[]>([]);
   const [isHovered, setIsHovered] = React.useState(false);
   const [containerHeight, setContainerHeight] = React.useState<number>(0);
   const isBottom = position.startsWith('bottom');
   const isTop = position.startsWith('top');
 
-  // 计算当前展开状态（根据prop和鼠标状态）
+  // Calculate current expanded state (based on prop and mouse state)
   const isExpanded = React.useMemo(() => expand || isHovered, [expand, isHovered]);
 
   const ownerState = {
@@ -177,7 +177,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
 
   const classes = useUtilityClasses(ownerState);
 
-  // 鼠标事件处理函数
+  // Mouse event handlers
   const handleMouseEnter = React.useCallback(() => {
     if (!expand) {
       setIsHovered(true);
@@ -188,12 +188,12 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     setIsHovered(false);
   }, []);
 
-  // 最前面的Toast的高度
+  // Height of the first Toast
   const firstToastHeight = React.useMemo(() => {
     if (toasts.length <= 0) {
       return 0;
     }
-    // 排序后排出height未测量出的toast
+    // Sort and filter out toasts with unmeasured height
     const firstToast = toasts
       .sort((a, b) => {
         const posA = a.position || 0;
@@ -204,13 +204,13 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     return firstToast?.height;
   }, [toasts]);
 
-  // 订阅事件系统
+  // Subscribe to event system
   React.useEffect(() => {
-    // 处理Toast事件
+    // Handle Toast events
     const unsubscribe = ToasterEvents.subscribe((toast) => {
-      // 检查是否为dismiss事件
+      // Check if it's a dismiss event
       if ('dismiss' in toast) {
-        // 标记toast为删除状态
+        // Mark toast for deletion
         requestAnimationFrame(() => {
           setToasts((prevToasts) => {
             return prevToasts.map((t) => (t.id === toast.id ? { ...t, delete: true } : t));
@@ -219,14 +219,14 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
         return;
       }
 
-      // 处理添加或更新通知
+      // Handle add or update notifications
       if ('message' in toast) {
         setTimeout(() => {
           ReactDOM.flushSync(() => {
             setToasts((prevToasts) => {
               const existingToastIndex = prevToasts.findIndex((t) => t.id === toast.id);
 
-              // 更新现有通知
+              // Update existing notification
               if (existingToastIndex !== -1) {
                 return [
                   ...prevToasts.slice(0, existingToastIndex),
@@ -235,7 +235,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
                 ];
               }
 
-              // 添加新通知
+              // Add new notification
               return [toast as ToastData, ...prevToasts];
             });
           });
@@ -243,28 +243,28 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
       }
     });
 
-    // 处理清除事件
+    // Handle clear events
     const clearUnsubscribe = ToasterEvents.onClear(() => {
       setToasts([]);
     });
 
-    // 组件卸载时取消订阅
+    // Component unmounting cancels subscription
     return () => {
       unsubscribe();
       clearUnsubscribe();
     };
   }, []);
 
-  // 处理通知自动关闭
+  // Handle notification auto-close
   React.useEffect(() => {
     const timeouts: number[] = [];
 
     toasts.forEach((toast) => {
-      // 跳过以下情况：
-      // 1. 已标记为删除的toast
-      // 2. 用户当前正在悬停
-      // 3. 有正在进行的Promise
-      // 4. Action按钮处于loading状态
+      // Skip the following cases:
+      // 1. Toast marked for deletion
+      // 2. User currently hovering
+      // 3. There's a pending Promise
+      // 4. Action button is in loading state
       if (!toast.delete && !isHovered && !toast.promisePending && !toast.actionLoading) {
         const toastDuration = toast.duration || duration;
         const timeout = setTimeout(() => {
@@ -280,31 +280,31 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     };
   }, [toasts, duration, isHovered]);
 
-  // 更新Toast高度
+  // Update Toast height
   const updateToastHeight = React.useCallback((id: number, height: number) => {
     setToasts((prevToasts) =>
       prevToasts.map((toast) => (toast.id === id ? { ...toast, height } : toast)),
     );
   }, []);
 
-  // 处理action按钮点击
+  // Handle action button click
   const handleActionClick = React.useCallback(async (toast: ToastData) => {
     if (!toast.actionClick) return;
 
     try {
-      // 设置loading状态
+      // Set loading state
       setToasts((prevToasts) =>
         prevToasts.map((t) => (t.id === toast.id ? { ...t, actionLoading: true } : t)),
       );
 
-      // 执行action点击处理函数
+      // Execute action click handler
       const result = await toast.actionClick();
 
-      // 恢复loading状态并处理返回结果
+      // Restore loading state and handle return result
       setToasts((prevToasts) =>
         prevToasts.map((t) => {
           if (t.id === toast.id) {
-            // 如果action处理函数返回了对象，则使用它更新当前toast
+            // If the action handler returns an object, use it to update the current toast
             if (result && typeof result === 'object') {
               return {
                 ...t,
@@ -312,7 +312,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
                 actionLoading: false,
               };
             }
-            // 否则只是恢复loading状态
+            // Otherwise just restore loading state
             return { ...t, actionLoading: false };
           }
           return t;
@@ -321,7 +321,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
 
       return result;
     } catch (error) {
-      // 出错时更新toast为错误状态
+      // Error state update toast
       setToasts((prevToasts) =>
         prevToasts.map((t) => {
           if (t.id === toast.id) {
@@ -329,8 +329,8 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
               ...t,
               actionLoading: false,
               type: 'error',
-              message: '操作失败',
-              description: error instanceof Error ? error.message : '未知错误',
+              message: 'Operation failed',
+              description: error instanceof Error ? error.message : 'Unknown error',
             };
           }
           return t;
@@ -340,12 +340,12 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     }
   }, []);
 
-  // 删除已标记为删除的通知
+  // Remove deleted notifications
   const removeDeletedToasts = React.useCallback((id: number) => {
     setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
   }, []);
 
-  // 计算容器高度
+  // Calculate container height
   React.useEffect(() => {
     if (toasts.length === 0) {
       setContainerHeight(0);
@@ -353,7 +353,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     }
 
     if (isExpanded) {
-      // 只计算前 maxVisible 个toast的高度
+      // Calculate height of only the first maxVisible toasts
       const visibleToasts = [...toasts]
         .sort((a, b) => {
           const posA = a.position || 0;
@@ -369,7 +369,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
 
       setContainerHeight(Math.max(totalHeight - gap, 0));
     } else {
-      // 折叠模式下，容器高度为最上面那个toast的高度
+      // Folded mode, container height is the height of the top toast
       const firstToast = [...toasts].sort((a, b) => {
         const posA = a.position || 0;
         const posB = b.position || 0;
@@ -379,7 +379,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     }
   }, [toasts, isExpanded, gap, maxVisible]);
 
-  // 计算Toast位置
+  // Calculate Toast position
   const calculatePosition = React.useCallback(
     (index: number): number => {
       const sortedToasts = [...toasts].sort((a, b) => {
@@ -399,19 +399,19 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     [toasts, gap],
   );
 
-  // 获取Toast样式
+  // Get Toast style
   const getToastStyle = React.useCallback(
     (index: number, toast: ToastData): React.CSSProperties => {
-      // 计算实际位置索引，考虑是否有标记为删除的toast
+      // Calculate effective index, considering deleted toasts
       let effectiveIndex = index;
       if (isExpanded) {
-        // 根据实际位置计算，不考虑已标记为删除的toast
+        // Calculate based on actual position, ignoring deleted toasts
         const visibleToasts = toasts.filter((t) => !t.delete);
         effectiveIndex = visibleToasts.indexOf(toast);
         if (effectiveIndex === -1) effectiveIndex = index;
       }
 
-      // 滑动动画的起始值
+      // Swipe animation start value
       let swipeAmountY;
       if (isExpanded) {
         const yOffset = calculatePosition(effectiveIndex);
@@ -420,7 +420,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
         swipeAmountY = `${isBottom ? '-' : ''}${effectiveIndex * 16}px`;
       }
 
-      // 基础样式
+      // Base style
       const baseStyle = {
         '--gap': `${gap}px`,
         '--swipe-amount-y': swipeAmountY,
@@ -431,27 +431,27 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
         bottom: isBottom ? 0 : 'auto',
         top: !isBottom ? 0 : 'auto',
         opacity: index < maxVisible ? 1 : 0,
-        pointerEvents: index < maxVisible ? 'auto' : 'none', // 超出可见数量的toast无法点击
+        pointerEvents: index < maxVisible ? 'auto' : 'none', // Toasts beyond visible count cannot be clicked
       } as React.CSSProperties;
 
-      // 根据展开状态设置不同的样式
+      // Set different styles based on expanded state
       if (isExpanded) {
         const yOffset = calculatePosition(effectiveIndex);
         return {
           ...baseStyle,
           transform: `translateY(${isBottom ? '-' : ''}${yOffset}px)`,
-          // 新元素添加初始样式
+          // New element initial style
           ...(!toast.height && {
             opacity: 0,
             transform: isTop
               ? `translateY(calc(${isBottom ? '-' : ''}${yOffset}px - 100%))`
               : `translateY(calc(${isBottom ? '-' : ''}${yOffset}px + 100%))`,
           }),
-          // 删除元素的样式
+          // Deleted element style
           ...(toast.delete && {
             animation: `${isTop ? swipeOutUp : swipeOutDown} 0.25s forwards`,
           }),
-          // 当有toast被删除时，让隐藏的toast立即开始滑入
+          // When a toast is deleted, hidden toast starts sliding in immediately
           ...(toasts.some((t) => t.delete) &&
             index >= maxVisible - 1 && {
               opacity: 1,
@@ -462,18 +462,18 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
         return {
           ...baseStyle,
           transform: `translateY(${isBottom ? '-' : ''}${effectiveIndex * 16}px) scale(${1 - effectiveIndex * 0.05})`,
-          // 新元素添加初始样式
+          // New element initial style
           ...(!toast.height && {
             opacity: 0,
             transform: isTop
               ? `translateY(calc(${isBottom ? '-' : ''}${effectiveIndex * 16}px - 100%)) scale(${1 - effectiveIndex * 0.05})`
               : `translateY(calc(${isBottom ? '-' : ''}${effectiveIndex * 16}px + 100%)) scale(${1 - effectiveIndex * 0.05})`,
           }),
-          // 删除元素的样式
+          // Deleted element style
           ...(toast.delete && {
             animation: `${isTop ? swipeOutUp : swipeOutDown} 0.25s forwards`,
           }),
-          // 当有toast被删除时，让隐藏的toast立即开始滑入
+          // When a toast is deleted, hidden toast starts sliding in immediately
           ...(toasts.some((t) => t.delete) &&
             index >= maxVisible - 1 && {
               opacity: 1,
@@ -485,7 +485,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     [isExpanded, calculatePosition, isBottom, isTop, maxVisible, toasts, gap],
   );
 
-  // 获取动画
+  // Get animation
   const getAnimation = React.useCallback(
     (toast: ToastData, index: number): string | undefined => {
       if (toast.delete) {
@@ -501,7 +501,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     [isTop],
   );
 
-  // 处理动画结束
+  // Handle animation end
   const handleAnimationEnd = React.useCallback(
     (toast: ToastData) => {
       if (toast.delete) {
@@ -511,18 +511,18 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     [removeDeletedToasts],
   );
 
-  // 加强版的删除Toast处理函数
+  // Enhanced delete Toast handler
   const handleCloseToast = React.useCallback((toast: ToastData) => {
-    // 先标记为删除状态，让它开始动画
+    // Mark for deletion, start animation
     setToasts((prevToasts) => {
       const updatedToasts = prevToasts.map((t) => (t.id === toast.id ? { ...t, delete: true } : t));
 
-      // 重新计算所有toast的位置，确保上方的toast立即重新定位
+      // Recalculate all toast positions, ensure top toast immediately repositions
       const deletedIndex = prevToasts.findIndex((t) => t.id === toast.id);
       if (deletedIndex !== -1) {
-        // 通知布局已更改，触发重新渲染
+        // Notify layout changed, trigger re-render
         setTimeout(() => {
-          // 强制更新以重新计算位置
+          // Force update to recalculate position
           setToasts([...updatedToasts]);
         }, 0);
       }
@@ -530,16 +530,16 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
       return updatedToasts;
     });
 
-    // 通知事件系统
+    // Notify event system
     try {
       if (toast.onClose) {
         toast.onClose();
       }
     } catch (err) {
-      console.error('执行toast.onClose回调时出错:', err);
+      console.error('Error executing toast.onClose callback:', err);
     }
 
-    // 发送dismiss事件
+    // Send dismiss event
     ToasterEvents.dismiss(toast.id);
   }, []);
 
@@ -564,7 +564,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
               const posB = b.position || 0;
               return posB - posA;
             })
-            // 只渲染 maxVisible + 1 个toast，多一个用于显示消失动画
+            // Render only maxVisible + 1 toasts, one extra for disappearing animation
             .slice(0, maxVisible + 1)
             .map((toast, index) => (
               <Toast
@@ -587,7 +587,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
                   isNew: !toast.height,
                   isDeleting: toast.delete,
                   message: toast.message,
-                  // 堆叠高度
+                  // Stack height
                   stackHeight: firstToastHeight,
                   onHeightChange: updateToastHeight,
                 }}

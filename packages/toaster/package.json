@@ -3,10 +3,6 @@
   "version": "0.1.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "types"
-  ],
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup"
@@ -21,6 +17,28 @@
       "types": "./types/index.d.ts"
     }
   },
+  "description": "A toast component for Material-UI",
+  "keywords": [
+    "material-ui",
+    "toast",
+    "toaster",
+    "notification",
+    "alert"
+  ],
+  "homepage": "https://github.com/wh5938316/material-ui-toaster",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wh5938316/material-ui-toaster.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wh5938316/material-ui-toaster/issues"
+  },
+  "files": [
+    "dist",
+    "types"
+  ],
+  "author": "horatio_w",
+  "license": "MIT",
   "peerDependencies": {
     "@mui/icons-material": "^5.0.0 || ^6.0.0 || ^7.0.0",
     "@mui/material": "^5.0.0 || ^6.0.0 || ^7.0.0",

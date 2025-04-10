@@ -46,6 +46,8 @@ export interface ToastClasses {
   promiseRejected: string;
   /** Applied to action button in loading state */
   actionLoading: string;
+  /** Applied to the first Toast in stack */
+  first: string;
 }
 
 export type ToastClassKey = keyof ToastClasses;
@@ -78,4 +80,5 @@ export const toastClasses: ToastClasses = generateUtilityClasses('MuiToast', [
   'promiseFulfilled',
   'promiseRejected',
   'actionLoading',
+  'first',
 ]);

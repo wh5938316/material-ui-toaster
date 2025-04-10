@@ -93,16 +93,18 @@ export interface ToasterSlotProps {
 // Type for all component slots
 export interface ToasterOwnerState extends ToasterProps {
   position: ToasterPosition;
+  isHovered?: boolean;
 }
 
 // Get component style classes
 const useUtilityClasses = (ownerState: ToasterOwnerState) => {
-  const { position, expand } = ownerState;
+  const { position, expand, isHovered } = ownerState;
   const slots = {
     root: [
       'root',
       position && `position${position.charAt(0).toUpperCase() + position.slice(1)}`,
       expand && 'expanded',
+      isHovered && 'hovered',
     ],
     container: ['container'],
   };
@@ -193,6 +195,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     ...props,
     position,
     expand: isExpanded,
+    isHovered,
   };
 
   const classes = useUtilityClasses(ownerState);
@@ -610,6 +613,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
                   // Stack height
                   stackHeight: firstToastHeight,
                   onHeightChange: updateToastHeight,
+                  isFirst: index === 0,
                 }}
                 onAnimationEnd={() => handleAnimationEnd(toast)}
               />

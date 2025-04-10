@@ -85,6 +85,7 @@ export interface ToastOwnerState extends Omit<ToastProps, 'ownerState'> {
   height?: number;
   isExpanded: boolean;
   stackHeight?: number;
+  isFirst?: boolean;
 }
 
 // Toast component slots
@@ -145,13 +146,14 @@ export interface ToastSlotProps {
 
 // Get component style classes
 const useUtilityClasses = (ownerState: ToastOwnerState) => {
-  const { type, isNew, isDeleting } = ownerState;
+  const { type, isNew, isDeleting, isFirst } = ownerState;
   const slots = {
     root: [
       'root',
       type && `type${type.charAt(0).toUpperCase() + type.slice(1)}`,
       isNew && 'new',
       isDeleting && 'deleting',
+      isFirst && 'first',
     ],
     content: ['content'],
     message: ['message'],
@@ -319,6 +321,7 @@ const CloseButton = styled(IconButton, {
   name: 'MuiToast',
   slot: 'CloseButton',
 })(({ theme }) => ({
+  zIndex: 2,
   position: 'absolute',
   top: theme.spacing(1),
   right: theme.spacing(1),

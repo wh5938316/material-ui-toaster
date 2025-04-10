@@ -22,6 +22,8 @@ export interface ToasterClasses {
   positionBottomCenter: string;
   /** Applied to the root element in expanded state */
   expanded: string;
+  /** Applied to the root element when hovered */
+  hovered: string;
 }
 
 export type ToasterClassKey = keyof ToasterClasses;
@@ -42,4 +44,5 @@ export const toasterClasses: ToasterClasses = generateUtilityClasses('MuiToaster
   'positionBottomRight',
   'positionBottomCenter',
   'expanded',
+  'hovered',
 ]);

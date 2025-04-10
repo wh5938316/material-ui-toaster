@@ -5,7 +5,7 @@ import { buttonClasses } from '@mui/material/Button';
 import { svgIconClasses } from '@mui/material/SvgIcon';
 import { amber, blue, deepPurple, green, grey, red } from '@mui/material/colors';
 import { alpha, createTheme } from '@mui/material/styles';
-import { toastClasses } from 'material-ui-toaster';
+import { toastClasses, toasterClasses } from 'material-ui-toaster';
 import { Roboto } from 'next/font/google';
 
 const roboto = Roboto({
@@ -377,6 +377,12 @@ const theme = createTheme({
           backgroundColor: theme.palette.background.paper,
           border: '1px solid',
           borderColor: theme.palette.divider,
+          transition: theme.transitions.create('opacity', {
+            duration: 350,
+            easing: theme.transitions.easing.easeInOut,
+          }),
+          display: 'none',
+          opacity: 0,
           [`& .${svgIconClasses.root}`]: {
             fontSize: 12,
             fill: 'currentColor',
@@ -392,9 +398,17 @@ const theme = createTheme({
       styleOverrides: {
         root: ({ theme }) => ({
           // 增加间距
-          '&.MuiToaster-positionBottomRight': {
+          [`&.${toasterClasses.positionBottomRight}`]: {
             bottom: 32,
             right: 32,
+          },
+          '&:hover': {
+            [`& .${toastClasses.closeButton}`]: {
+              display: 'flex',
+            },
+          },
+          [`&.${toasterClasses.hovered} .${toastClasses.closeButton}`]: {
+            opacity: 1,
           },
         }),
       },

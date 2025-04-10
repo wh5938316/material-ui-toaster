@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import Toaster, { ToasterPosition, toaster } from 'material-ui-toaster';
 import * as React from 'react';
 
-// 模拟异步操作
+// Simulate async operation
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function ToasterDemo() {
@@ -20,10 +20,11 @@ export default function ToasterDemo() {
   const [expand, setExpand] = React.useState<boolean>(false);
   const [duration, setDuration] = React.useState<number>(5000);
 
-  // 显示一条通知
+  // Show a notification
   const showToast = (type?: 'info' | 'success' | 'warning' | 'error' | 'default') => {
-    const message = `这是一条${getTypeText(type)}通知`;
-    const description = '这是通知的描述文本，可以包含更多详细信息。';
+    const message = `This is a ${getTypeText(type)} notification`;
+    const description =
+      'This is the notification description text, which can contain more details.';
 
     if (type && type !== 'default') {
       toaster[type](message, { description });
@@ -32,89 +33,89 @@ export default function ToasterDemo() {
     }
   };
 
-  // 获取类型文本
+  // Get type text
   const getTypeText = (type?: string) => {
     switch (type) {
       case 'info':
-        return '信息';
+        return 'information';
       case 'success':
-        return '成功';
+        return 'success';
       case 'warning':
-        return '警告';
+        return 'warning';
       case 'error':
-        return '错误';
+        return 'error';
       default:
-        return '默认';
+        return 'default';
     }
   };
 
-  // 显示带自定义图标的通知
+  // Show notification with custom icon
   const showCustomIconToast = () => {
-    toaster.info('这是带自定义图标的通知', {
+    toaster.info('This is a notification with custom icon', {
       icon: <PhotoCamera color="primary" />,
-      description: '您可以为任何类型的通知自定义图标。',
+      description: 'You can customize the icon for any type of notification.',
     });
   };
 
-  // 显示带操作按钮的通知
+  // Show notification with action button
   const showActionToast = () => {
     toaster.action(
-      '您确定要删除这个文件吗？',
-      '删除',
+      'Are you sure you want to delete this file?',
+      'Delete',
       async () => {
-        // 模拟删除操作
+        // Simulate delete operation
         await wait(2000);
-        // 不需要返回任何内容，action方法会自动处理成功状态
+        // No need to return anything, action method will automatically handle success state
       },
       {
         type: 'default',
-        description: '此操作无法撤销。',
-        success: '文件已成功删除！',
-        error: '删除失败，请重试',
+        description: 'This action cannot be undone.',
+        success: 'File has been successfully deleted!',
+        error: 'Delete failed, please try again',
       },
     );
   };
 
-  // 显示基于Promise的通知
+  // Show Promise-based notification
   const showPromiseToast = () => {
-    // 模拟文件上传
+    // Simulate file upload
     const uploadPromise = new Promise<{ fileName: string; fileSize: string }>((resolve, reject) => {
-      // 50%概率成功，50%概率失败
+      // 50% chance of success, 50% chance of failure
       setTimeout(() => {
         if (Math.random() > 0.5) {
-          console.log('上传成功');
+          console.log('Upload successful');
           resolve({ fileName: 'document.pdf', fileSize: '2.4MB' });
         } else {
-          console.log('上传失败');
-          reject(new Error('网络连接超时'));
+          console.log('Upload failed');
+          reject(new Error('Network connection timeout'));
         }
       }, 3000);
     });
 
-    // 直接传递Promise实例，注意参数顺序是message, promise, options
-    toaster.promise('正在上传文件...', uploadPromise, {
-      success: (data) => `文件 ${data.fileName} (${data.fileSize}) 上传成功`,
-      error: (err) => `上传失败: ${err.message}`,
+    // Directly pass Promise instance, note the parameter order is message, promise, options
+    toaster.promise('Uploading file...', uploadPromise, {
+      success: (data) => `File ${data.fileName} (${data.fileSize}) uploaded successfully`,
+      error: (err) => `Upload failed: ${err.message}`,
     });
   };
 
-  // 显示自定义内容的通知
+  // Show notification with custom content
   const showCustomToast = () => {
     const CustomContent = (
       <Box sx={{ bgcolor: 'background.paper' }}>
         <Typography variant="subtitle1" gutterBottom fontWeight="bold">
-          新消息通知
+          New Message Notification
         </Typography>
         {/* <Divider sx={{ my: 1 }} /> */}
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          您有3条未读消息和2个新的任务需要处理。
+          You have 3 unread messages and 2 new tasks to handle.
         </Typography>
         <Stack direction="row" spacing={1} justifyContent="flex-end">
           <Button size="small" variant="text">
-            忽略
+            Ignore
           </Button>
           <Button size="small" variant="contained">
-            查看详情
+            View Details
           </Button>
         </Stack>
       </Box>
@@ -123,7 +124,7 @@ export default function ToasterDemo() {
     toaster.custom(CustomContent, { duration: 8000 });
   };
 
-  // 处理持续时间变化
+  // Handle duration change
   const handleDurationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(event.target.value, 10);
     if (!isNaN(value) && value > 0) {
@@ -135,38 +136,38 @@ export default function ToasterDemo() {
     <div style={{ padding: 24 }}>
       <Toaster position={position} expand={expand} duration={duration} />
       <Typography variant="h4" gutterBottom>
-        Toaster 组件演示
+        Toaster Component Demo
       </Typography>
 
       <Typography variant="h6" gutterBottom>
-        基础通知类型
+        Basic Notification Types
       </Typography>
 
       <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
         <Button variant="contained" onClick={() => showToast('default')}>
-          默认通知
+          Default
         </Button>
         <Button variant="contained" color="info" onClick={() => showToast('info')}>
-          信息通知
+          Info
         </Button>
         <Button variant="contained" color="success" onClick={() => showToast('success')}>
-          成功通知
+          Success
         </Button>
         <Button variant="contained" color="warning" onClick={() => showToast('warning')}>
-          警告通知
+          Warning
         </Button>
         <Button variant="contained" color="error" onClick={() => showToast('error')}>
-          错误通知
+          Error
         </Button>
       </Stack>
 
       <Typography variant="h6" gutterBottom>
-        高级通知功能
+        Advanced Notification Features
       </Typography>
 
       <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
         <Button variant="outlined" onClick={showCustomIconToast} startIcon={<PhotoCamera />}>
-          自定义图标
+          Custom Icon
         </Button>
         <Button
           variant="outlined"
@@ -174,7 +175,7 @@ export default function ToasterDemo() {
           onClick={showActionToast}
           startIcon={<DeleteIcon />}
         >
-          操作按钮
+          Action Button
         </Button>
         <Button
           variant="outlined"
@@ -182,15 +183,15 @@ export default function ToasterDemo() {
           onClick={showPromiseToast}
           startIcon={<DownloadIcon />}
         >
-          Promise通知
+          Promise Toast
         </Button>
         <Button variant="outlined" color="secondary" onClick={showCustomToast}>
-          自定义内容
+          Custom Content
         </Button>
       </Stack>
 
       <Typography variant="h6" gutterBottom>
-        通知位置
+        Notification Position
       </Typography>
 
       <Stack direction="row" spacing={2} sx={{ mb: 4, flexWrap: 'wrap', gap: 1 }}>
@@ -198,55 +199,55 @@ export default function ToasterDemo() {
           variant={position === 'top-left' ? 'contained' : 'outlined'}
           onClick={() => setPosition('top-left')}
         >
-          左上角
+          Top Left
         </Button>
         <Button
           variant={position === 'top-center' ? 'contained' : 'outlined'}
           onClick={() => setPosition('top-center')}
         >
-          顶部居中
+          Top Center
         </Button>
         <Button
           variant={position === 'top-right' ? 'contained' : 'outlined'}
           onClick={() => setPosition('top-right')}
         >
-          右上角
+          Top Right
         </Button>
         <Button
           variant={position === 'bottom-left' ? 'contained' : 'outlined'}
           onClick={() => setPosition('bottom-left')}
         >
-          左下角
+          Bottom Left
         </Button>
         <Button
           variant={position === 'bottom-center' ? 'contained' : 'outlined'}
           onClick={() => setPosition('bottom-center')}
         >
-          底部居中
+          Bottom Center
         </Button>
         <Button
           variant={position === 'bottom-right' ? 'contained' : 'outlined'}
           onClick={() => setPosition('bottom-right')}
         >
-          右下角
+          Bottom Right
         </Button>
       </Stack>
 
       <Typography variant="h6" gutterBottom>
-        显示模式
+        Display Mode
       </Typography>
 
       <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
         <Button variant={expand ? 'contained' : 'outlined'} onClick={() => setExpand(true)}>
-          展开模式
+          Expanded Mode
         </Button>
         <Button variant={!expand ? 'contained' : 'outlined'} onClick={() => setExpand(false)}>
-          堆叠模式
+          Stacked Mode
         </Button>
       </Stack>
 
       <Typography variant="h6" gutterBottom>
-        显示时长
+        Display Duration
       </Typography>
 
       <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
@@ -258,32 +259,32 @@ export default function ToasterDemo() {
           variant="outlined"
           slotProps={{
             input: {
-              endAdornment: <InputAdornment position="end">毫秒</InputAdornment>,
+              endAdornment: <InputAdornment position="end">ms</InputAdornment>,
             },
           }}
         />
       </Stack>
 
       <Typography variant="h6" gutterBottom>
-        其他操作
+        Other Operations
       </Typography>
 
       <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
         <Button variant="outlined" onClick={() => toaster.clear()}>
-          清除所有通知
+          Clear All Notifications
         </Button>
         <Button
           variant="outlined"
           onClick={() => {
             const id = toaster.toast({
-              message: '这条通知将持续10秒',
-              description: '除非你手动关闭它',
+              message: 'This notification will last for 10 seconds',
+              description: 'Unless you close it manually',
               duration: 10000,
             });
-            console.log('通知ID:', id);
+            console.log('Notification ID:', id);
           }}
         >
-          长时间通知
+          Long Duration Toast
         </Button>
       </Stack>
     </div>

@@ -5,7 +5,9 @@ import DownloadIcon from '@mui/icons-material/Download';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import InputAdornment from '@mui/material/InputAdornment';
 import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Toaster, { ToasterPosition, toaster } from 'material-ui-toaster';
 import * as React from 'react';
@@ -16,6 +18,7 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export default function ToasterDemo() {
   const [position, setPosition] = React.useState<ToasterPosition>('bottom-right');
   const [expand, setExpand] = React.useState<boolean>(false);
+  const [duration, setDuration] = React.useState<number>(5000);
 
   // 显示一条通知
   const showToast = (type?: 'info' | 'success' | 'warning' | 'error' | 'default') => {
@@ -120,9 +123,17 @@ export default function ToasterDemo() {
     toaster.custom(CustomContent, { duration: 8000 });
   };
 
+  // 处理持续时间变化
+  const handleDurationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(event.target.value, 10);
+    if (!isNaN(value) && value > 0) {
+      setDuration(value);
+    }
+  };
+
   return (
     <div style={{ padding: 24 }}>
-      <Toaster position={position} expand={expand} duration={5000} />
+      <Toaster position={position} expand={expand} duration={duration} />
       <Typography variant="h4" gutterBottom>
         Toaster 组件演示
       </Typography>
@@ -232,6 +243,25 @@ export default function ToasterDemo() {
         <Button variant={!expand ? 'contained' : 'outlined'} onClick={() => setExpand(false)}>
           堆叠模式
         </Button>
+      </Stack>
+
+      <Typography variant="h6" gutterBottom>
+        显示时长
+      </Typography>
+
+      <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
+        <TextField
+          type="number"
+          value={duration}
+          onChange={handleDurationChange}
+          size="small"
+          variant="outlined"
+          slotProps={{
+            input: {
+              endAdornment: <InputAdornment position="end">毫秒</InputAdornment>,
+            },
+          }}
+        />
       </Stack>
 
       <Typography variant="h6" gutterBottom>

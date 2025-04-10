@@ -1,6 +1,11 @@
 'use client';
 
-import { switchClasses } from '@mui/material';
+import {
+  iconButtonClasses,
+  inputAdornmentClasses,
+  outlinedInputClasses,
+  switchClasses,
+} from '@mui/material';
 import { buttonClasses } from '@mui/material/Button';
 import { svgIconClasses } from '@mui/material/SvgIcon';
 import { amber, blue, deepPurple, green, grey, red } from '@mui/material/colors';
@@ -320,6 +325,96 @@ const theme = createTheme({
               },
             },
           ],
+        }),
+      },
+    },
+
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          border: 'none',
+        },
+        input: {
+          '&::placeholder': {
+            opacity: 0.7,
+            color: grey[500],
+          },
+          variants: [
+            {
+              props: {
+                size: 'medium',
+              },
+              style: {
+                height: 18,
+              },
+            },
+          ],
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        input: {
+          padding: 0,
+        },
+        root: ({ theme }) => ({
+          padding: '8px 12px',
+          color: theme.palette.text.primary,
+          borderRadius: theme.shape.borderRadius,
+          border: `1px solid ${theme.palette.divider}`,
+          backgroundColor: theme.palette.background.default,
+          transition: 'border 120ms ease-in',
+          '&:hover': {
+            borderColor: grey[400],
+          },
+          [`&.${outlinedInputClasses.focused}`]: {
+            outline: `3px solid ${alpha(brand[500], 0.5)}`,
+            borderColor: brand[400],
+          },
+          variants: [
+            {
+              props: {
+                size: 'small',
+              },
+              style: {
+                // minHeight: '2.25rem',
+                paddingTop: 4.5,
+                paddingBottom: 4.5,
+              },
+            },
+            {
+              props: {
+                size: 'medium',
+              },
+              style: {
+                [`&:not(.MuiInputBase-multiline})`]: {
+                  height: '2.5rem',
+                },
+                [`& .${inputAdornmentClasses.root}`]: {
+                  width: '40px',
+                  height: '18px',
+                },
+              },
+            },
+          ],
+        }),
+        notchedOutline: {
+          border: 'none',
+        },
+      },
+    },
+    MuiInputAdornment: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          [`& .${iconButtonClasses.root}`]: {
+            border: 0,
+            width: '100%',
+            height: '100%',
+            color: theme.palette.grey[500],
+            ...theme.applyStyles('dark', {
+              color: theme.palette.grey[400],
+            }),
+          },
         }),
       },
     },

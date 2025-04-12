@@ -3,12 +3,12 @@ import { keyframes } from '@mui/material/styles';
 // Swipe out upward animation
 export const swipeOutUp = keyframes`
   from {
-    transform: translateY(var(--swipe-amount-y));
+    transform: translateY(var(--swipe-amount-y)) scale(var(--scale, 1));
     opacity: 1;
   }
 
   to {
-    transform: translateY(calc(var(--swipe-amount-y) - 100%));
+    transform: translateY(calc(var(--swipe-amount-y) - 100%)) scale(var(--scale, 1));
     opacity: 0;
   }
 `;
@@ -16,12 +16,12 @@ export const swipeOutUp = keyframes`
 // Swipe out downward animation
 export const swipeOutDown = keyframes`
   from {
-    transform: translateY(var(--swipe-amount-y));
+    transform: translateY(var(--swipe-amount-y)) scale(var(--scale, 1));
     opacity: 1;
   }
 
   to {
-    transform: translateY(calc(var(--swipe-amount-y) + 100%));
+    transform: translateY(calc(var(--swipe-amount-y) + 100%)) scale(var(--scale, 1));
     opacity: 0;
   }
 `;
@@ -29,12 +29,12 @@ export const swipeOutDown = keyframes`
 // Swipe in upward animation
 export const swipeInUp = keyframes`
   from {
-    transform: translateY(calc(var(--swipe-amount-y) + 100%));
+    transform: translateY(calc(var(--swipe-amount-y) + 100%)) scale(var(--scale, 1));
     opacity: 0;
   }
 
   to {
-    transform: translateY(var(--swipe-amount-y));
+    transform: translateY(var(--swipe-amount-y)) scale(var(--scale, 1));
     opacity: 1;
   }
 `;
@@ -42,12 +42,12 @@ export const swipeInUp = keyframes`
 // Swipe in downward animation
 export const swipeInDown = keyframes`
   from {
-    transform: translateY(calc(var(--swipe-amount-y) - 100%));
+    transform: translateY(calc(var(--swipe-amount-y) - 100%)) scale(var(--scale, 1));
     opacity: 0;
   }
 
   to {
-    transform: translateY(var(--swipe-amount-y));
+    transform: translateY(var(--swipe-amount-y)) scale(var(--scale, 1));
     opacity: 1;
   }
 `;

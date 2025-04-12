@@ -131,9 +131,9 @@ const ToasterRoot = styled('div', {
       ? { left: 24 }
       : horizontal === 'center'
         ? {
-            left: '50%',
-            transform: 'translateX(-50%)',
-          }
+          left: '50%',
+          transform: 'translateX(-50%)',
+        }
         : { right: 24 }),
 
     [theme.breakpoints.down('sm')]: {
@@ -142,9 +142,9 @@ const ToasterRoot = styled('div', {
         ? { left: 16 }
         : horizontal === 'center'
           ? {
-              left: '50%',
-              transform: 'translateX(-50%)',
-            }
+            left: '50%',
+            transform: 'translateX(-50%)',
+          }
           : { right: 16 }),
     },
   };
@@ -480,18 +480,25 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
         swipeAmountY = `${isBottom ? '-' : ''}${effectiveIndex * 16}px`;
       }
 
+      // Calculate scale value
+      const scaleValue = isExpanded ? 1 : 1 - effectiveIndex * 0.05;
+
+      // Check if toast is in visible area (within maxVisible limit)
+      const isVisible = index < maxVisible;
+
       // Base style
       const baseStyle = {
         '--gap': `${gap}px`,
         '--swipe-amount-y': swipeAmountY, // This is used in animation keyframes
+        '--scale': scaleValue, // Add scale CSS variable
         zIndex: toasts.length - index,
         position: 'absolute',
         right: 0,
         left: 0,
         bottom: isBottom ? 0 : 'auto',
         top: !isBottom ? 0 : 'auto',
-        opacity: index < maxVisible ? 1 : 0,
-        pointerEvents: index < maxVisible ? 'auto' : 'none', // Toasts beyond visible count cannot be clicked
+        opacity: isVisible ? 1 : 0,
+        pointerEvents: isVisible ? 'auto' : 'none', // Toasts beyond visible count cannot be clicked
       } as React.CSSProperties;
 
       // Set different styles based on expanded state and deletion state
@@ -512,16 +519,17 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
               ? `translateY(calc(${isBottom ? '-' : ''}${yOffset}px - 100%))`
               : `translateY(calc(${isBottom ? '-' : ''}${yOffset}px + 100%))`,
           }),
-          // Deleted element style
-          ...(toast.delete && {
+          // Deleted element style - only apply animation for visible toasts
+          ...(toast.delete &&
+            isVisible && {
             animation: `${isTop ? swipeOutUp : swipeOutDown} 0.35s forwards`,
           }),
           // When a toast is deleted, hidden toast starts sliding in immediately
           ...(toasts.some((t) => t.delete) &&
             index >= maxVisible - 1 && {
-              opacity: 1,
-              transform: `translateY(${isBottom ? '-' : ''}${yOffset}px)`,
-            }),
+            opacity: 1,
+            transform: `translateY(${isBottom ? '-' : ''}${yOffset}px)`,
+          }),
         };
       } else {
         // For non-expanded (folded) mode
@@ -529,24 +537,25 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
 
         return {
           ...baseStyle,
-          transform: `translateY(${isBottom ? '-' : ''}${yOffset}px) scale(${1 - effectiveIndex * 0.05})`,
+          transform: `translateY(${isBottom ? '-' : ''}${yOffset}px) scale(${scaleValue})`,
           // New element initial style
           ...(!toast.height && {
             opacity: 0,
             transform: isTop
-              ? `translateY(calc(${isBottom ? '-' : ''}${yOffset}px - 100%)) scale(${1 - effectiveIndex * 0.05})`
-              : `translateY(calc(${isBottom ? '-' : ''}${yOffset}px + 100%)) scale(${1 - effectiveIndex * 0.05})`,
+              ? `translateY(calc(${isBottom ? '-' : ''}${yOffset}px - 100%)) scale(${scaleValue})`
+              : `translateY(calc(${isBottom ? '-' : ''}${yOffset}px + 100%)) scale(${scaleValue})`,
           }),
-          // Deleted element style
-          ...(toast.delete && {
+          // Deleted element style - only apply animation for visible toasts
+          ...(toast.delete &&
+            isVisible && {
             animation: `${isTop ? swipeOutUp : swipeOutDown} 0.35s forwards`,
           }),
           // When a toast is deleted, hidden toast starts sliding in immediately
           ...(toasts.some((t) => t.delete) &&
             index >= maxVisible - 1 && {
-              opacity: 1,
-              transform: `translateY(${isBottom ? '-' : ''}${yOffset}px) scale(${1 - effectiveIndex * 0.05})`,
-            }),
+            opacity: 1,
+            transform: `translateY(${isBottom ? '-' : ''}${yOffset}px) scale(${scaleValue})`,
+          }),
         };
       }
     },
@@ -556,7 +565,10 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
   // Get animation
   const getAnimation = React.useCallback(
     (toast: ToastData, index: number): string | undefined => {
-      if (toast.delete) {
+      // Only apply animations to visible toasts
+      const isVisible = index < maxVisible;
+
+      if (toast.delete && isVisible) {
         return isTop ? swipeOutUp.toString() : swipeOutDown.toString();
       }
 
@@ -566,7 +578,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
 
       return undefined;
     },
-    [isTop],
+    [isTop, maxVisible],
   );
 
   // Handle animation end
@@ -586,6 +598,34 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     },
     [removeDeletedToasts],
   );
+
+  // Process toasts that need to be deleted without animation
+  React.useEffect(() => {
+    // Find all toasts marked for deletion
+    const deletedToasts = toasts.filter((toast) => toast.delete);
+    // Find all deleted toasts that are outside the visible range
+    const invisibleDeletedToasts = deletedToasts.filter((toast, index) => {
+      // Determine if the toast is visible based on its position in the sorted array
+      const sortedToasts = [...toasts].sort((a, b) => {
+        const posA = a.position || 0;
+        const posB = b.position || 0;
+        return posB - posA;
+      });
+      const toastIndex = sortedToasts.findIndex((t) => t.id === toast.id);
+      return toastIndex >= maxVisible;
+    });
+
+    // Immediately remove invisible toasts without animation
+    invisibleDeletedToasts.forEach((toast) => {
+      removeDeletedToasts(toast.id);
+      // Clean up stored offset values
+      setDeletedToastOffsets((prev) => {
+        const newOffsets = { ...prev };
+        delete newOffsets[toast.id];
+        return newOffsets;
+      });
+    });
+  }, [toasts, maxVisible, removeDeletedToasts]);
 
   // Enhanced delete Toast handler
   const handleCloseToast = React.useCallback(

@@ -220,8 +220,6 @@ const ToastRoot = styled('li', {
     WebkitFontSmoothing: 'antialiased',
   }),
 
-  backgroundColor: theme.palette.background.paper,
-
   // Default type style
   [`&.${toastClasses.typeDefault} .${toastClasses.content}`]: {
     color: theme.palette.text.primary,

@@ -2,8 +2,10 @@ import Toast from './Toast';
 import { ToastData, ToasterEvents } from './ToasterEvents';
 import { swipeInDown, swipeInUp, swipeOutDown, swipeOutUp } from './toaster-animations';
 import { getToasterUtilityClass } from './toasterClasses';
-import { Portal } from '@mui/material';
+import { Timer } from './utils';
+import Portal from '@mui/material/Portal';
 import { styled, useThemeProps } from '@mui/material/styles';
+import { debounce } from '@mui/material/utils';
 import { unstable_composeClasses as composeClasses } from '@mui/utils';
 import * as React from 'react';
 import ReactDOM from 'react-dom';
@@ -131,9 +133,9 @@ const ToasterRoot = styled('div', {
       ? { left: 24 }
       : horizontal === 'center'
         ? {
-          left: '50%',
-          transform: 'translateX(-50%)',
-        }
+            left: '50%',
+            transform: 'translateX(-50%)',
+          }
         : { right: 24 }),
 
     [theme.breakpoints.down('sm')]: {
@@ -142,9 +144,9 @@ const ToasterRoot = styled('div', {
         ? { left: 16 }
         : horizontal === 'center'
           ? {
-            left: '50%',
-            transform: 'translateX(-50%)',
-          }
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }
           : { right: 16 }),
     },
   };
@@ -185,10 +187,19 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
   const [toasts, setToasts] = React.useState<ToastData[]>([]);
   const [isHovered, setIsHovered] = React.useState(false);
   const [containerHeight, setContainerHeight] = React.useState<number>(0);
+  // Use useRef to store timers instead of useState
+  const autoDeleteTimersRef = React.useRef<Record<number, Timer>>({});
+
+  // Style cache for deleted toasts to prevent unnecessary recalculations
+  const styleCache = React.useRef<Map<number, React.CSSProperties>>(new Map());
+
   // Store fixed yOffset values for toasts being deleted
   const [deletedToastOffsets, setDeletedToastOffsets] = React.useState<Record<number, number>>({});
-  const isBottom = position.startsWith('bottom');
-  const isTop = position.startsWith('top');
+
+  const [isTop, isBottom] = React.useMemo(
+    () => [position.startsWith('top'), position.startsWith('bottom')],
+    [position],
+  );
 
   // Calculate current expanded state (based on prop and mouse state)
   const isExpanded = React.useMemo(() => expand || isHovered, [expand, isHovered]);
@@ -204,13 +215,13 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
 
   // Mouse event handlers
   const handleMouseEnter = React.useCallback(() => {
-    if (!expand) {
-      setIsHovered(true);
-    }
+    setIsHovered(true);
+    Object.values(autoDeleteTimersRef.current).forEach((timer) => timer.pause());
   }, [expand]);
 
   const handleMouseLeave = React.useCallback(() => {
     setIsHovered(false);
+    Object.values(autoDeleteTimersRef.current).forEach((timer) => timer.resume());
   }, []);
 
   // Height of the first Toast
@@ -229,45 +240,47 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     return firstToast?.height;
   }, [toasts]);
 
-  // Subscribe to event system
-  React.useEffect(() => {
-    // Timeouts for all toasts
-    const timeoutIds: Record<number, NodeJS.Timeout> = {};
-
-    // Create or restart auto-close timer for a toast
-    const setToastTimeout = (toast: ToastData) => {
-      // Cancel previous timer if exists
-      if (timeoutIds[toast.id]) {
-        clearTimeout(timeoutIds[toast.id]);
-      }
-
+  const setToastTimeout = React.useCallback(
+    (toast: ToastData) => {
       // Skip timer creation if toast is deleted, has pending promise or loading action
       if (toast.delete || toast.promisePending || toast.actionLoading) {
         return;
       }
 
+      // Cancel previous timer if exists
+      if (autoDeleteTimersRef.current[toast.id]) {
+        autoDeleteTimersRef.current[toast.id].clear();
+      }
+
       const toastDuration = toast.duration || duration;
 
-      // Set new auto-close timer for the toast
-      timeoutIds[toast.id] = setTimeout(() => {
-        // Only auto-close when not being hovered
-        if (!isHovered) {
-          ToasterEvents.dismiss(toast.id);
-        } else {
-          // If currently hovered, cancel timer and reschedule for later
-          setToastTimeout(toast);
-        }
+      const timer = new Timer(() => {
+        ToasterEvents.dismiss(toast.id);
+        // Remove timer directly from ref
+        const newTimers = { ...autoDeleteTimersRef.current };
+        delete newTimers[toast.id];
+        autoDeleteTimersRef.current = newTimers;
       }, toastDuration);
-    };
 
+      // Update ref directly
+      autoDeleteTimersRef.current = {
+        ...autoDeleteTimersRef.current,
+        [toast.id]: timer,
+      };
+    },
+    [duration],
+  );
+
+  // Subscribe to event system
+  React.useEffect(() => {
     // Handle Toast events
     const unsubscribe = ToasterEvents.subscribe((toast) => {
       // Check if it's a dismiss event
       if ('dismiss' in toast) {
         // Clear timer for this toast
-        if (timeoutIds[toast.id]) {
-          clearTimeout(timeoutIds[toast.id]);
-          delete timeoutIds[toast.id];
+        if (autoDeleteTimersRef.current[toast.id]) {
+          autoDeleteTimersRef.current[toast.id].clear();
+          delete autoDeleteTimersRef.current[toast.id];
         }
 
         // Mark toast for deletion
@@ -279,58 +292,54 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
         return;
       }
 
-      // Handle add or update notifications
-      if ('message' in toast) {
-        setTimeout(() => {
-          ReactDOM.flushSync(() => {
-            setToasts((prevToasts) => {
-              const existingToastIndex = prevToasts.findIndex((t) => t.id === toast.id);
+      setTimeout(() => {
+        ReactDOM.flushSync(() => {
+          setToasts((prevToasts) => {
+            const existingToastIndex = prevToasts.findIndex((t) => t.id === toast.id);
 
-              // Update existing toast
-              if (existingToastIndex !== -1) {
-                const updatedToast = {
-                  ...prevToasts[existingToastIndex],
-                  ...toast,
-                };
+            // Update existing toast
+            if (existingToastIndex !== -1) {
+              const updatedToast = {
+                ...prevToasts[existingToastIndex],
+                ...toast,
+              };
 
-                // Set auto-close timer for updated toast
-                setToastTimeout(updatedToast as ToastData);
+              // Set auto-close timer for updated toast
+              setToastTimeout(updatedToast as ToastData);
 
-                return [
-                  ...prevToasts.slice(0, existingToastIndex),
-                  updatedToast,
-                  ...prevToasts.slice(existingToastIndex + 1),
-                ];
-              }
+              return [
+                ...prevToasts.slice(0, existingToastIndex),
+                updatedToast,
+                ...prevToasts.slice(existingToastIndex + 1),
+              ];
+            }
 
-              // Add new toast
-              const newToast = toast as ToastData;
+            // Add new toast
+            const newToast = toast as ToastData;
 
-              // Set auto-close timer for new toast
-              setToastTimeout(newToast);
+            // Set auto-close timer for new toast
+            setToastTimeout(newToast);
 
-              return [newToast, ...prevToasts];
-            });
+            return [newToast, ...prevToasts];
           });
         });
-      }
+      });
     });
 
     // Handle clear all event
     const clearUnsubscribe = ToasterEvents.onClear(() => {
       // Clear all timers
-      Object.values(timeoutIds).forEach(clearTimeout);
+      Object.values(autoDeleteTimersRef.current).forEach((timer) => timer.clear());
+      autoDeleteTimersRef.current = {};
       setToasts([]);
     });
 
     // Cleanup on component unmount
     return () => {
-      // Clear all timers
-      Object.values(timeoutIds).forEach(clearTimeout);
       unsubscribe();
       clearUnsubscribe();
     };
-  }, [duration, isHovered]);
+  }, [setToastTimeout]);
 
   // Update Toast height
   const updateToastHeight = React.useCallback((id: number, height: number) => {
@@ -397,39 +406,47 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
   }, []);
 
-  // Calculate container height
-  React.useEffect(() => {
-    if (toasts.length === 0) {
-      setContainerHeight(0);
-      return;
-    }
+  // Use debounce to optimize high-frequency container height updates
+  const updateContainerHeight = React.useCallback(
+    debounce(() => {
+      if (toasts.length === 0) {
+        setContainerHeight(0);
+        return;
+      }
 
-    if (isExpanded) {
-      // Calculate height of only the first maxVisible toasts
-      const visibleToasts = [...toasts]
-        .sort((a, b) => {
+      if (isExpanded) {
+        // Calculate height of only the first maxVisible toasts
+        const visibleToasts = [...toasts]
+          .sort((a, b) => {
+            const posA = a.position || 0;
+            const posB = b.position || 0;
+            return posB - posA;
+          })
+          .slice(0, maxVisible);
+
+        const totalHeight = visibleToasts.reduce((sum, toast) => {
+          const height = toast.height || 0;
+          return sum + height + gap;
+        }, 0);
+
+        setContainerHeight(Math.max(totalHeight - gap, 0));
+      } else {
+        // Folded mode, container height is the height of the top toast
+        const firstToast = [...toasts].sort((a, b) => {
           const posA = a.position || 0;
           const posB = b.position || 0;
           return posB - posA;
-        })
-        .slice(0, maxVisible);
+        })[0];
+        setContainerHeight(firstToast?.height || 0);
+      }
+    }, 10),
+    [toasts, isExpanded, gap, maxVisible],
+  );
 
-      const totalHeight = visibleToasts.reduce((sum, toast) => {
-        const height = toast.height || 0;
-        return sum + height + gap;
-      }, 0);
-
-      setContainerHeight(Math.max(totalHeight - gap, 0));
-    } else {
-      // Folded mode, container height is the height of the top toast
-      const firstToast = [...toasts].sort((a, b) => {
-        const posA = a.position || 0;
-        const posB = b.position || 0;
-        return posB - posA;
-      })[0];
-      setContainerHeight(firstToast?.height || 0);
-    }
-  }, [toasts, isExpanded, gap, maxVisible]);
+  // Use custom debounced function instead of original container height calculation
+  React.useEffect(() => {
+    updateContainerHeight();
+  }, [toasts, isExpanded, updateContainerHeight]);
 
   // Calculate Toast position
   const calculatePosition = React.useCallback(
@@ -522,14 +539,14 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
           // Deleted element style - only apply animation for visible toasts
           ...(toast.delete &&
             isVisible && {
-            animation: `${isTop ? swipeOutUp : swipeOutDown} 0.35s forwards`,
-          }),
+              animation: `${isTop ? swipeOutUp : swipeOutDown} 0.35s forwards`,
+            }),
           // When a toast is deleted, hidden toast starts sliding in immediately
           ...(toasts.some((t) => t.delete) &&
             index >= maxVisible - 1 && {
-            opacity: 1,
-            transform: `translateY(${isBottom ? '-' : ''}${yOffset}px)`,
-          }),
+              opacity: 1,
+              transform: `translateY(${isBottom ? '-' : ''}${yOffset}px)`,
+            }),
         };
       } else {
         // For non-expanded (folded) mode
@@ -548,14 +565,14 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
           // Deleted element style - only apply animation for visible toasts
           ...(toast.delete &&
             isVisible && {
-            animation: `${isTop ? swipeOutUp : swipeOutDown} 0.35s forwards`,
-          }),
+              animation: `${isTop ? swipeOutUp : swipeOutDown} 0.35s forwards`,
+            }),
           // When a toast is deleted, hidden toast starts sliding in immediately
           ...(toasts.some((t) => t.delete) &&
             index >= maxVisible - 1 && {
-            opacity: 1,
-            transform: `translateY(${isBottom ? '-' : ''}${yOffset}px) scale(${scaleValue})`,
-          }),
+              opacity: 1,
+              transform: `translateY(${isBottom ? '-' : ''}${yOffset}px) scale(${scaleValue})`,
+            }),
         };
       }
     },
@@ -581,19 +598,46 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
     [isTop, maxVisible],
   );
 
+  // Optimized toast style getter that caches styles for deleted toasts
+  const getToastStyleOptimized = React.useCallback(
+    (index: number, toast: ToastData): React.CSSProperties => {
+      // If toast is being deleted and its style is already cached, return the cached style
+      if (toast.delete && styleCache.current.has(toast.id)) {
+        return styleCache.current.get(toast.id)!;
+      }
+
+      // Calculate the style normally
+      const style = getToastStyle(index, toast);
+
+      // If toast is being deleted, cache its style to prevent recalculations during animation
+      if (toast.delete) {
+        styleCache.current.set(toast.id, style);
+      }
+
+      return style;
+    },
+    [getToastStyle],
+  );
+
   // Handle animation end
   const handleAnimationEnd = React.useCallback(
     (toast: ToastData) => {
       if (toast.delete) {
-        // Clean up the stored yOffset for this toast
-        setDeletedToastOffsets((prev) => {
-          const newOffsets = { ...prev };
-          delete newOffsets[toast.id];
-          return newOffsets;
-        });
+        // Use requestAnimationFrame to ensure smooth animation completion
+        requestAnimationFrame(() => {
+          // Clean up the stored yOffset for this toast
+          setDeletedToastOffsets((prev) => {
+            const newOffsets = { ...prev };
+            delete newOffsets[toast.id];
+            return newOffsets;
+          });
 
-        // Remove the toast completely
-        removeDeletedToasts(toast.id);
+          // Clean up cached style
+          styleCache.current.delete(toast.id);
+
+          // Remove the toast completely
+          removeDeletedToasts(toast.id);
+        });
       }
     },
     [removeDeletedToasts],
@@ -660,24 +704,26 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
       }
 
       // Now mark for deletion and start animation
-      setToasts((prevToasts) => {
-        const updatedToasts = prevToasts.map((t) =>
-          t.id === toast.id ? { ...t, delete: true } : t,
-        );
-        return updatedToasts;
-      });
+      requestAnimationFrame(() => {
+        setToasts((prevToasts) => {
+          const updatedToasts = prevToasts.map((t) =>
+            t.id === toast.id ? { ...t, delete: true } : t,
+          );
+          return updatedToasts;
+        });
 
-      // Notify event system
-      try {
-        if (toast.onClose) {
-          toast.onClose();
+        // Notify event system
+        try {
+          if (toast.onClose) {
+            toast.onClose();
+          }
+        } catch (err) {
+          console.error('Error executing toast.onClose callback:', err);
         }
-      } catch (err) {
-        console.error('Error executing toast.onClose callback:', err);
-      }
 
-      // Send dismiss event
-      ToasterEvents.dismiss(toast.id);
+        // Send dismiss event
+        ToasterEvents.dismiss(toast.id);
+      });
     },
     [toasts, isExpanded, calculatePosition],
   );
@@ -695,7 +741,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
         <ToasterContainer
           ownerState={ownerState}
           className={classes.container}
-          style={{ height: `${containerHeight}px` }}
+          style={{ height: `${containerHeight}px`, willChange: 'height' }}
         >
           {toasts
             .sort((a, b) => {
@@ -708,7 +754,7 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
             .map((toast, index) => (
               <Toast
                 key={toast.id}
-                style={getToastStyle(index, toast)}
+                style={getToastStyleOptimized(index, toast)}
                 message={toast.message}
                 description={toast.description}
                 type={toast.type}
@@ -728,7 +774,8 @@ const Toaster = React.forwardRef<HTMLDivElement, ToasterProps>(function Toaster(
                   message: toast.message,
                   // Stack height
                   stackHeight: firstToastHeight,
-                  onHeightChange: updateToastHeight,
+                  // Don't update height for toasts being deleted
+                  onHeightChange: toast.delete ? undefined : updateToastHeight,
                   isFirst: index === 0,
                 }}
                 onAnimationEnd={() => handleAnimationEnd(toast)}

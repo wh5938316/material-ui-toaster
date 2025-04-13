@@ -197,6 +197,7 @@ const ToastRoot = styled('li', {
     easing: theme.transitions.easing.easeOut,
   }),
   cursor: 'default',
+  willChange: 'transform, opacity',
 
   // Add spacing pseudo-element
   '&::after': {
@@ -213,8 +214,10 @@ const ToastRoot = styled('li', {
   // Deleting state
   ...(ownerState.isDeleting && {
     pointerEvents: 'none',
-    animation: `${animation} 0.35s forwards`,
+    animation: `${animation} 0.2s ease-out forwards`,
     willChange: 'transform, opacity',
+    backfaceVisibility: 'hidden',
+    WebkitFontSmoothing: 'antialiased',
   }),
 
   backgroundColor: theme.palette.background.paper,
@@ -406,16 +409,6 @@ const Toast = React.forwardRef<HTMLLIElement, ToastProps>(function Toast(inProps
     customContent,
   ]);
 
-  // Handle animation end event
-  const handleAnimationEnd = React.useCallback(
-    (e: React.AnimationEvent<HTMLLIElement>) => {
-      if (onAnimationEnd) {
-        onAnimationEnd();
-      }
-    },
-    [onAnimationEnd, ownerState.id, ownerState.isDeleting],
-  );
-
   // If there is custom content, render it directly
   if (customContent) {
     return (
@@ -425,7 +418,7 @@ const Toast = React.forwardRef<HTMLLIElement, ToastProps>(function Toast(inProps
         ownerState={ownerState as ToastOwnerState}
         animation={animation}
         style={style}
-        onAnimationEnd={handleAnimationEnd}
+        onAnimationEnd={onAnimationEnd}
         {...other}
       >
         <ToastContent
@@ -460,7 +453,7 @@ const Toast = React.forwardRef<HTMLLIElement, ToastProps>(function Toast(inProps
       ownerState={ownerState as ToastOwnerState}
       animation={animation}
       style={style}
-      onAnimationEnd={handleAnimationEnd}
+      onAnimationEnd={onAnimationEnd}
       {...other}
     >
       <ToastContent
@@ -519,4 +512,26 @@ const Toast = React.forwardRef<HTMLLIElement, ToastProps>(function Toast(inProps
 
 Toast.displayName = 'Toast';
 
-export default Toast;
+// Apply React.memo to enhance performance, preventing unnecessary re-renders
+export default React.memo(Toast, (prevProps, nextProps) => {
+  // If the toast is already being deleted, don't re-render
+  if (prevProps.ownerState?.isDeleting && nextProps.ownerState?.isDeleting) {
+    return true; // Return true to skip re-render
+  }
+
+  // If key properties remain the same, skip re-rendering
+  if (
+    prevProps.message === nextProps.message &&
+    prevProps.description === nextProps.description &&
+    prevProps.type === nextProps.type &&
+    prevProps.actionLabel === nextProps.actionLabel &&
+    prevProps.actionLoading === nextProps.actionLoading &&
+    JSON.stringify(prevProps.style) === JSON.stringify(nextProps.style) &&
+    prevProps.ownerState?.isExpanded === nextProps.ownerState?.isExpanded
+  ) {
+    return true;
+  }
+
+  // Otherwise allow re-render
+  return false;
+});

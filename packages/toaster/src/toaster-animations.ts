@@ -5,11 +5,13 @@ export const swipeOutUp = keyframes`
   from {
     transform: translateY(var(--swipe-amount-y)) scale(var(--scale, 1));
     opacity: 1;
+    will-change: transform, opacity;
   }
 
   to {
     transform: translateY(calc(var(--swipe-amount-y) - 100%)) scale(var(--scale, 1));
     opacity: 0;
+    will-change: transform, opacity;
   }
 `;
 
@@ -18,11 +20,13 @@ export const swipeOutDown = keyframes`
   from {
     transform: translateY(var(--swipe-amount-y)) scale(var(--scale, 1));
     opacity: 1;
+    will-change: transform, opacity;
   }
 
   to {
     transform: translateY(calc(var(--swipe-amount-y) + 100%)) scale(var(--scale, 1));
     opacity: 0;
+    will-change: transform, opacity;
   }
 `;
 
@@ -31,11 +35,13 @@ export const swipeInUp = keyframes`
   from {
     transform: translateY(calc(var(--swipe-amount-y) + 100%)) scale(var(--scale, 1));
     opacity: 0;
+    will-change: transform, opacity;
   }
 
   to {
     transform: translateY(var(--swipe-amount-y)) scale(var(--scale, 1));
     opacity: 1;
+    will-change: transform, opacity;
   }
 `;
 
@@ -44,10 +50,12 @@ export const swipeInDown = keyframes`
   from {
     transform: translateY(calc(var(--swipe-amount-y) - 100%)) scale(var(--scale, 1));
     opacity: 0;
+    will-change: transform, opacity;
   }
 
   to {
     transform: translateY(var(--swipe-amount-y)) scale(var(--scale, 1));
     opacity: 1;
+    will-change: transform, opacity;
   }
 `;

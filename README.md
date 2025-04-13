@@ -1,5 +1,9 @@
 # material-ui-toaster
 
+[![npm version](https://img.shields.io/npm/v/material-ui-toaster.svg)](https://www.npmjs.com/package/material-ui-toaster)
+[![npm downloads](https://img.shields.io/npm/dm/material-ui-toaster.svg)](https://www.npmjs.com/package/material-ui-toaster)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A modern, customizable toast notification system for Material UI applications. This library is
 inspired by the animations of Sonner, but built with Material UI components and fully integrated
 with the MUI theme system.
@@ -70,9 +74,9 @@ function MyComponent() {
 
 ### Toaster Component Props
 
-| Prop          | Type                                                                 | Default          | Description                                 |
-| ------------- | -------------------------------------------------------------------- | ---------------- | ------------------------------------------- |
-| `position`    | `'top-left'` \| `'top-right'` \| `'bottom-left'` \| `'bottom-right'` | `'bottom-right'` | Position of the toast stack                 |
+| Prop          | Type                                                                                                               | Default          | Description                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------- | ------------------------------------------- |
+| `position`    | `'top-left'` \| `'top-center'` \| `'top-right'` \| `'bottom-left'` \| `'bottom-center'` \| `'bottom-right'` | `'bottom-right'` | Position of the toast stack                 |
 | `expand`      | `boolean`                                                            | `false`          | Whether to expand the toast list by default |
 | `gap`         | `number`                                                             | `16`             | Gap between toast items                     |
 | `maxVisible`  | `number`                                                             | `3`              | Maximum number of visible toasts            |

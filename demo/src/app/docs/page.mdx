@@ -1,0 +1,99 @@
+# Getting Started
+
+## Installation
+
+Install the Material UI Toaster package:
+
+```bash
+npm install material-ui-toaster
+```
+
+Or using yarn:
+
+```bash
+yarn add material-ui-toaster
+```
+
+## Basic Setup
+
+Add the `Toaster` component to your application:
+
+```jsx
+import { Toaster } from 'material-ui-toaster';
+
+function App() {
+  return (
+    <>
+      {/* Your app content */}
+      <Toaster position="bottom-right" />
+    </>
+  );
+}
+```
+
+## Basic Usage
+
+Now you can use the toast function anywhere in your application:
+
+```jsx
+import { toast } from 'material-ui-toaster';
+
+function MyComponent() {
+  const handleClick = () => {
+    toast.success('Operation completed successfully!');
+  };
+
+  return (
+    <button onClick={handleClick}>
+      Show Notification
+    </button>
+  );
+}
+```
+
+## Notification Types
+
+Material UI Toaster supports various notification types:
+
+```jsx
+// Success notification
+toast.success('Operation completed successfully!');
+
+// Error notification
+toast.error('An error occurred!');
+
+// Warning notification
+toast.warning('Please note this important information');
+
+// Info notification
+toast.info('Here\'s something you might want to know');
+```
+
+## Custom Options
+
+You can customize options for each notification:
+
+```jsx
+toast.success('File uploaded', {
+  // Display duration (milliseconds)
+  duration: 5000,
+  
+  // Notification description
+  description: 'Your file has been successfully uploaded to the server',
+  
+  // Add an action button
+  action: {
+    label: 'View',
+    onClick: () => {
+      // Action when button is clicked
+      console.log('Viewing file');
+    }
+  }
+});
+```
+
+## Next Steps
+
+- Check the [API Documentation](/docs/api) for more options
+- Explore [Advanced Usage](/docs/advanced-usage) for more features
+- Browse [Examples](/docs/examples) for practical code snippets

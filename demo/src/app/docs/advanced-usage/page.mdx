@@ -1,0 +1,129 @@
+# Advanced Usage
+
+## Custom Components
+
+You can use custom React components in your toasts:
+
+```jsx
+import { toast } from '@mui/toaster';
+import { CircularProgress } from '@mui/material';
+
+// Using a custom component
+toast(
+  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <CircularProgress size={24} />
+    <span>Processing your request...</span>
+  </div>
+);
+```
+
+## Custom Animations
+
+You can customize the animation effects for your toasts:
+
+```jsx
+import { Toaster } from '@mui/toaster';
+
+function App() {
+  return (
+    <Toaster
+      toastClassName="custom-toast"
+      // Customize CSS variables to modify animations
+      style={{
+        '--toast-enter-duration': '500ms',
+        '--toast-exit-duration': '300ms',
+      }}
+    />
+  );
+}
+```
+
+## Theme Integration
+
+Material UI Toaster integrates perfectly with your Material UI theme:
+
+```jsx
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Toaster } from '@mui/toaster';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#2196f3',
+    },
+    secondary: {
+      main: '#f50057',
+    },
+  },
+});
+
+function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      {/* Toaster will inherit theme colors */}
+      <Toaster />
+      {/* Your app content */}
+    </ThemeProvider>
+  );
+}
+```
+
+## Global Configuration
+
+You can set global default configurations that will apply to all toasts:
+
+```jsx
+import { toast } from '@mui/toaster';
+
+// Set global default configuration
+toast.configure({
+  position: 'top-right',
+  duration: 3000,
+  pauseOnHover: true,
+  closeButton: true,
+  maxToasts: 5,
+});
+```
+
+## Context Isolation
+
+If your application has multiple contexts, you can use multiple `Toaster` instances:
+
+```jsx
+import { createToaster } from '@mui/toaster';
+
+// Create an isolated toast context
+const { Toaster: AdminToaster, toast: adminToast } = createToaster();
+
+function AdminPanel() {
+  return (
+    <div>
+      <button onClick={() => adminToast.info('Only shown in admin panel')}>
+        Show Admin Notification
+      </button>
+      <AdminToaster position="top-right" />
+    </div>
+  );
+}
+```
+
+## Auto-Close Control
+
+Control the auto-close behavior of toasts:
+
+```jsx
+// Create a toast that never auto-closes
+const toastId = toast.info('This notification will not auto-close', {
+  duration: 0, // Setting to 0 means no auto-close
+});
+
+// Create a toast with a longer countdown
+toast.success('Operation successful', {
+  duration: 10000, // Auto-close after 10 seconds
+});
+
+// Manually close toast under specific conditions
+if (someCondition) {
+  toast.dismiss(toastId);
+}
+``` 

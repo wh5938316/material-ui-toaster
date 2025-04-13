@@ -22,7 +22,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
       }}
     >
       <MuiThemeProvider theme={useCustomTheme ? theme : defaultTheme}>
-        <Box sx={{ position: 'fixed', top: 20, right: 20, zIndex: 1300 }}>
+        {/* <Box sx={{ position: 'fixed', top: 20, right: 20, zIndex: 1300 }}>
           <FormControlLabel
             control={
               <Switch
@@ -31,9 +31,9 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
                 color="primary"
               />
             }
-            label={useCustomTheme ? '自定义样式' : '默认样式'}
+            label={useCustomTheme ? 'Custom Style' : 'Default Style'}
           />
-        </Box>
+        </Box> */}
         {children}
       </MuiThemeProvider>
     </DefaultPropsProvider>

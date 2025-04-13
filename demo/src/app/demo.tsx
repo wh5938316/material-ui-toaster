@@ -9,7 +9,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import Toaster, { ToasterPosition, toaster } from 'material-ui-toaster';
+import { Toaster, ToasterPosition, toaster } from 'material-ui-toaster';
 import * as React from 'react';
 
 // Simulate async operation

@@ -1,0 +1,134 @@
+### Installation
+
+```bash
+npm install material-ui-toaster
+```
+
+### Features
+
+- **Types**: Various notification types including success, error, warning, and info
+- **Positions**: Flexible positioning with 6 placement options (top-left, top-center, top-right, bottom-left, bottom-center, bottom-right)
+- **Display Modes**: Support for both stacked and expanded display modes
+- **Customizable**: Fully customizable styles through Material UI theme system
+
+### Basic Usage
+
+```jsx
+import { Toaster, toaster } from 'material-ui-toaster';
+
+// Add the Toaster component to your app
+<Toaster position="bottom-right" expand={false} />
+
+// Trigger notifications from anywhere
+toaster.success('Operation completed successfully!');
+```
+
+### TypeScript Setup
+
+If you're using TypeScript and want to customize the toaster through the MUI theme, add this reference to your project's `.d.ts` file:
+
+```typescript
+/// <reference types="material-ui-toaster/types" />
+```
+
+### Toast Types
+
+Material UI Toaster supports various notification types to convey different message priorities:
+
+```jsx
+// Success notification
+toaster.success('Operation completed successfully!');
+
+// Error notification
+toaster.error('An error occurred!');
+
+// Warning notification
+toaster.warning('Please note this important information');
+
+// Info notification
+toaster.info('Here's something you might want to know');
+
+// Default notification
+toaster.toast({ message: 'Neutral notification' });
+```
+
+### Configuration Options
+
+#### Position
+
+You can place toast notifications in any of 6 positions around the screen:
+
+```jsx
+<Toaster position="top-right" />
+```
+
+Available positions: `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right`.
+
+#### Display Mode
+
+Toast notifications can be displayed in two modes:
+
+```jsx
+// Stacked mode (default) - toasts stack on top of each other
+<Toaster expand={false} />
+
+// Expanded mode - toasts display side by side
+<Toaster expand={true} />
+```
+
+### Styling
+
+Material UI Toaster is fully customizable using Material UI's theme system. You can customize the appearance of toasts by adding style overrides to your theme:
+
+```jsx
+const theme = createTheme({
+  components: {
+    MuiToaster: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          // Customize position spacing
+          [`&.${toasterClasses.positionBottomRight}`]: {
+            bottom: 32,
+            right: 32,
+          },
+        }),
+      },
+    },
+    MuiToast: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          // Customize toast container
+        }),
+        content: ({ theme }) => ({
+          // Customize toast content area
+          border: '1px solid',
+          backgroundColor: theme.palette.background.paper,
+          borderColor: theme.palette.divider,
+          boxShadow: '0 4px 12px rgba(0,0,0,.1)',
+        }),
+        message: ({ theme }) => ({
+          // Customize message text
+          fontSize: '0.875rem',
+        }),
+        // ... other customizations
+      },
+    },
+  },
+});
+```
+
+### Demo
+
+Try out different toast notifications:
+
+import ToastDemo from './ToastDemo';
+
+<ToastDemo />
+
+### Configuration Demo
+
+Customize your toast position and display settings:
+
+import ToastConfig from './ToastConfig';
+
+<ToastConfig />

@@ -74,14 +74,14 @@ function MyComponent() {
 
 ### Toaster Component Props
 
-| Prop          | Type                                                                                                               | Default          | Description                                 |
-| ------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------- | ------------------------------------------- |
+| Prop          | Type                                                                                                        | Default          | Description                                 |
+| ------------- | ----------------------------------------------------------------------------------------------------------- | ---------------- | ------------------------------------------- |
 | `position`    | `'top-left'` \| `'top-center'` \| `'top-right'` \| `'bottom-left'` \| `'bottom-center'` \| `'bottom-right'` | `'bottom-right'` | Position of the toast stack                 |
-| `expand`      | `boolean`                                                            | `false`          | Whether to expand the toast list by default |
-| `gap`         | `number`                                                             | `16`             | Gap between toast items                     |
-| `maxVisible`  | `number`                                                             | `3`              | Maximum number of visible toasts            |
-| `duration`    | `number`                                                             | `5000`           | Default duration in milliseconds            |
-| `closeButton` | `ReactNode`                                                          | -                | Custom close button                         |
+| `expand`      | `boolean`                                                                                                   | `false`          | Whether to expand the toast list by default |
+| `gap`         | `number`                                                                                                    | `16`             | Gap between toast items                     |
+| `maxVisible`  | `number`                                                                                                    | `3`              | Maximum number of visible toasts            |
+| `duration`    | `number`                                                                                                    | `5000`           | Default duration in milliseconds            |
+| `closeButton` | `ReactNode`                                                                                                 | -                | Custom close button                         |
 
 ### Toast Methods
 

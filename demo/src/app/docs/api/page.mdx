@@ -1,0 +1,164 @@
+# API Documentation
+
+## Toaster Component
+
+The `Toaster` component is a container for displaying all toast notifications. It should be placed in your application's root component.
+
+### Properties
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `position` | `'top-left'` \| `'top-center'` \| `'top-right'` \| `'bottom-left'` \| `'bottom-center'` \| `'bottom-right'` | `'bottom-left'` | Position where toast notifications appear |
+| `maxToasts` | `number` | `3` | Maximum number of toasts that can be displayed at once |
+| `autoClose` | `boolean` \| `number` | `5000` | Time in milliseconds to automatically close toast, set to `false` to disable auto-close |
+| `closeButton` | `boolean` | `true` | Whether to show the close button |
+| `pauseOnHover` | `boolean` | `true` | Whether to pause the countdown when hovering over toast |
+| `className` | `string` | `undefined` | Custom CSS class name |
+| `expand` | `boolean` | `false` | Whether to display toasts in expanded mode (side by side) or stacked mode |
+| `duration` | `number` | `5000` | Default duration for all toasts (can be overridden per toast) |
+
+## Toast API
+
+The Toast API provides methods for displaying different types of notifications.
+
+### Basic Methods
+
+```tsx
+import { toast } from '@mui/toaster';
+
+// Basic usage
+toast(message: string, options?: ToastOptions);
+
+// Display success notification
+toast.success(message: string, options?: ToastOptions);
+
+// Display error notification
+toast.error(message: string, options?: ToastOptions);
+
+// Display warning notification
+toast.warning(message: string, options?: ToastOptions);
+
+// Display information notification
+toast.info(message: string, options?: ToastOptions);
+
+// Update existing notification
+toast.update(toastId: string, options: UpdateOptions);
+
+// Manually close notification
+toast.dismiss(toastId?: string);
+
+// Clear all notifications
+toast.clearAll();
+```
+
+### Toast Options
+
+```tsx
+interface ToastOptions {
+  id?: string;
+  duration?: number;
+  position?: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+  icon?: React.ReactNode;
+  description?: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+  onClose?: () => void;
+  pauseOnHover?: boolean;
+  closeButton?: boolean;
+}
+```
+
+## Theme Customization
+
+Material UI Toaster components can be customized through Material UI's theme system. You can override styles for both the `MuiToaster` and `MuiToast` components.
+
+### TypeScript Setup
+
+If you're using TypeScript and want to customize the toaster through the MUI theme, add this reference to your project's `.d.ts` file:
+
+```typescript
+/// <reference types="material-ui-toaster/types" />
+```
+
+This enables proper type checking for the component style overrides in your theme.
+
+### MuiToaster Component
+
+```tsx
+const theme = createTheme({
+  components: {
+    MuiToaster: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          // Customize position spacing
+          [`&.${toasterClasses.positionBottomRight}`]: {
+            bottom: 32,
+            right: 32,
+          },
+        }),
+      },
+    },
+  },
+});
+```
+
+### MuiToast Component
+
+```tsx
+const theme = createTheme({
+  components: {
+    MuiToast: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          // Customize toast type styles
+          [`&.${toastClasses.typeSuccess} .${toastClasses.content}`]: {
+            borderColor: theme.palette.success.light,
+          },
+          [`&.${toastClasses.typeError} .${toastClasses.content}`]: {
+            borderColor: theme.palette.error.light,
+          },
+        }),
+        content: ({ theme }) => ({
+          // Customize content container
+          border: '1px solid',
+          backgroundColor: theme.palette.background.paper,
+          borderColor: theme.palette.divider,
+        }),
+        message: ({ theme }) => ({
+          // Customize message text
+          fontSize: '0.875rem',
+        }),
+        description: ({ theme }) => ({
+          // Customize description text
+          fontSize: '0.75rem',
+        }),
+        closeButton: ({ theme }) => ({
+          // Customize close button
+        }),
+      },
+    },
+  },
+});
+```
+
+### Examples
+
+```jsx
+// Notification with custom ID
+const toastId = toast.info('Loading...', { 
+  id: 'loading-toast',
+  duration: 0 // Do not close automatically
+});
+
+// Later update the same notification
+toast.update(toastId, { 
+  content: 'Loading complete!',
+  type: 'success',
+  duration: 3000
+});
+
+// Manually close notification
+toast.dismiss(toastId);
+``` 

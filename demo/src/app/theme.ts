@@ -5,6 +5,8 @@ import {
   inputAdornmentClasses,
   outlinedInputClasses,
   switchClasses,
+  toggleButtonClasses,
+  toggleButtonGroupClasses,
 } from '@mui/material';
 import { buttonClasses } from '@mui/material/Button';
 import { svgIconClasses } from '@mui/material/SvgIcon';
@@ -22,7 +24,7 @@ const roboto = Roboto({
 const brand = deepPurple;
 
 const theme = createTheme({
-  colorSchemes: { light: true },
+  colorSchemes: { light: true, dark: true },
   cssVariables: {
     colorSchemeSelector: 'class',
   },
@@ -328,7 +330,40 @@ const theme = createTheme({
         }),
       },
     },
-
+    MuiToggleButtonGroup: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          borderRadius: '10px',
+          boxShadow: `0 4px 16px ${alpha(grey[400], 0.2)}`,
+          [`& .${toggleButtonGroupClasses.selected}`]: {
+            color: brand[500],
+          },
+          ...theme.applyStyles('dark', {
+            [`& .${toggleButtonGroupClasses.selected}`]: {
+              color: '#fff',
+            },
+            boxShadow: `0 4px 16px ${alpha(brand[700], 0.5)}`,
+          }),
+        }),
+      },
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          padding: '12px 16px',
+          textTransform: 'none',
+          borderRadius: '10px',
+          fontWeight: 500,
+          ...theme.applyStyles('dark', {
+            color: grey[400],
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.5)',
+            [`&.${toggleButtonClasses.selected}`]: {
+              color: brand[300],
+            },
+          }),
+        }),
+      },
+    },
     MuiInputBase: {
       styleOverrides: {
         root: {
@@ -448,9 +483,15 @@ const theme = createTheme({
             },
           },
           // 添加边框
-          '& .MuiToast-content': {
-            border: `1px solid ${theme.palette.divider}`,
+          [`& .${toastClasses.content}`]: {
+            border: `1px solid`,
             borderRadius: theme.shape.borderRadius + 2,
+
+            ...theme.applyStyles('dark', {
+              color: 'white',
+              backgroundColor: grey[900],
+              borderColor: grey[700],
+            }),
           },
         }),
         content: ({ theme }) => ({
@@ -461,6 +502,12 @@ const theme = createTheme({
           '&:hover': {
             boxShadow: '0 4px 12px rgba(0,0,0,.1)',
           },
+        }),
+        message: ({ theme }) => ({
+          fontSize: '0.875rem',
+        }),
+        description: ({ theme }) => ({
+          fontSize: '0.75rem',
         }),
         closeButton: ({ theme }) => ({
           left: -10,
@@ -485,6 +532,14 @@ const theme = createTheme({
           '&:hover': {
             backgroundColor: theme.palette.background.paper,
           },
+          ...theme.applyStyles('dark', {
+            color: 'white',
+            backgroundColor: grey[900],
+            borderColor: grey[700],
+            '&:hover': {
+              backgroundColor: grey[900],
+            },
+          }),
         }),
       },
     },

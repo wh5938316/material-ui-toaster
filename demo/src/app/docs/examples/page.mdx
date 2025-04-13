@@ -1,0 +1,179 @@
+# Examples
+
+Here are some example code snippets for common use cases.
+
+## Basic Examples
+
+Simple success and error notifications:
+
+```jsx
+import { toast } from '@mui/toaster';
+
+function BasicExample() {
+  return (
+    <div>
+      <button onClick={() => toast.success('File uploaded successfully!')}>
+        Show Success Notification
+      </button>
+      <button onClick={() => toast.error('Upload failed, please try again!')}>
+        Show Error Notification
+      </button>
+    </div>
+  );
+}
+```
+
+## Notifications with Actions
+
+Add clickable action buttons:
+
+```jsx
+import { toast } from '@mui/toaster';
+import { useState } from 'react';
+
+function ActionExample() {
+  const [files, setFiles] = useState(['Document1.pdf', 'Document2.pdf']);
+  
+  const deleteFile = (index) => {
+    const newFiles = [...files];
+    const deletedFile = newFiles.splice(index, 1)[0];
+    setFiles(newFiles);
+    
+    toast.success(`${deletedFile} has been deleted`, {
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          setFiles([...newFiles.slice(0, index), deletedFile, ...newFiles.slice(index)]);
+          toast.info(`Restored ${deletedFile}`);
+        }
+      }
+    });
+  };
+  
+  return (
+    <ul>
+      {files.map((file, index) => (
+        <li key={index}>
+          {file} <button onClick={() => deleteFile(index)}>Delete</button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Loading Status Notifications
+
+Display loading state and update results:
+
+```jsx
+import { toast } from '@mui/toaster';
+import { CircularProgress } from '@mui/material';
+
+function LoadingExample() {
+  const fetchData = async () => {
+    // Show loading notification and save ID
+    const toastId = toast.info(
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <CircularProgress size={20} color="inherit" />
+        <span>Fetching data...</span>
+      </div>,
+      { duration: 0 } // Do not auto-close
+    );
+    
+    try {
+      // Simulate API request
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Random success or failure
+      const success = Math.random() > 0.5;
+      
+      if (success) {
+        toast.update(toastId, {
+          type: 'success',
+          content: 'Data fetched successfully!',
+          duration: 3000,
+        });
+      } else {
+        throw new Error('API Error');
+      }
+    } catch (error) {
+      toast.update(toastId, {
+        type: 'error',
+        content: `Fetch failed: ${error.message}`,
+        duration: 3000,
+      });
+    }
+  };
+  
+  return <button onClick={fetchData}>Fetch Data</button>;
+}
+```
+
+## Form Submission Example
+
+Using toast during form submission:
+
+```jsx
+import { toast } from '@mui/toaster';
+import { useState } from 'react';
+import { Button, TextField, Box } from '@mui/material';
+
+function FormExample() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Simple validation
+    if (!email || !password) {
+      toast.warning('Please fill in all fields');
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      // Simulate API request
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      toast.success('Login successful! Redirecting...');
+      // In a real app, you might redirect to another page
+    } catch (error) {
+      toast.error('Login failed, please check your credentials');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  return (
+    <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 400 }}>
+      <TextField
+        fullWidth
+        margin="normal"
+        label="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <TextField
+        fullWidth
+        margin="normal"
+        type="password"
+        label="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <Button 
+        type="submit" 
+        variant="contained" 
+        disabled={loading}
+        sx={{ mt: 2 }}
+      >
+        {loading ? 'Logging in...' : 'Login'}
+      </Button>
+    </Box>
+  );
+}
+``` 

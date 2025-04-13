@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "scan": "next dev & pnpm dlx react-scan@latest localhost:3000",
     "start": "next start",
     "lint": "next lint"
   },

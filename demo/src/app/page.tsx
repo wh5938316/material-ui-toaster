@@ -53,7 +53,7 @@ export default function Home() {
           <Box sx={{ display: 'flex', gap: 2, mb: 4, justifyContent: 'center' }}>
             <Button
               variant="contained"
-              onClick={() => toaster.success('This is a Toast notification!')}
+              onClick={() => toaster.toast({ message: 'This is a Toast notification!' })}
               sx={{
                 borderRadius: '8px',
                 padding: '10px 24px',
@@ -68,7 +68,7 @@ export default function Home() {
             <Button
               variant="outlined"
               component={Link}
-              href="https://github.com/mui/material-ui"
+              href="https://github.com/wh5938316/material-ui-toaster"
               target="_blank"
               sx={{
                 borderRadius: '8px',
